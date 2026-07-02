@@ -1,0 +1,24 @@
+# Archivos temporales del sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de configuración de editores
+.vscode/
+*.swp
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+venv/
+env/
+
+# Excel temporales
+~$*.xlsx
+~$*.xls
+
+# Power BI (archivos de caché, no el .pbix)
+*.pbix.bak
+
+# Logs
+*.log

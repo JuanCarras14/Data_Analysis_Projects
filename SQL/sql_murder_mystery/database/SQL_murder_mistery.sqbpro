@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="sql-murder-mystery.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="5103"/><column_width id="4" width="0"/><expanded_item id="0" parent="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="drivers_license" custom_title="0" dock_id="1" table="4,15:maindrivers_license"/><dock_state state="000000ff00000000fd0000000100000002000001d50000024ffc0100000001fb000000160064006f0063006b00420072006f00770073006500310100000000000001d50000013900ffffff000001d50000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="crime_scene_report" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="71"/><column index="2" value="79"/><column index="3" value="300"/><column index="4" value="143"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="drivers_license" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="55"/><column index="2" value="35"/><column index="3" value="44"/><column index="4" value="64"/><column index="5" value="65"/><column index="6" value="55"/><column index="7" value="88"/><column index="8" value="111"/><column index="9" value="191"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="facebook_event_checkin" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="66"/><column index="2" value="58"/><column index="3" value="300"/><column index="4" value="71"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="get_fit_now_check_in" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="98"/><column index="2" value="91"/><column index="3" value="91"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="get_fit_now_member" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="47"/><column index="2" value="66"/><column index="3" value="167"/><column index="4" value="147"/><column index="5" value="122"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="income" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="79"/><column index="2" value="94"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="interview" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="66"/><column index="2" value="300"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="person" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="47"/><column index="2" value="183"/><column index="3" value="66"/><column index="4" value="104"/><column index="5" value="231"/><column index="6" value="79"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1*">SELECT
+date
+,type
+,description
+,city
+FROM
+crime_scene_report
+WHERE
+date=20180115
+AND type LIKE 'murder'
+AND city LIKE 'SQL City';
+
+SELECT *
+FROM person
+WHERE address_street_name = 'Northwestern Dr'
+ORDER by address_number DESC
+LIMIT 1;
+
+SELECT *
+FROM person
+WHERE address_street_name = 'Franklin Ave'
+AND name LIKE '%Annabel%';
+
+SELECT *
+FROM interview
+WHERE person_id IN (14887,16371);
+
+SELECT *
+FROM
+get_fit_now_member
+WHERE
+id LIKE '48Z%'
+AND membership_status = 'gold';
+
+SELECT
+p.name
+,p.license_id
+,l.plate_number
+,l.gender
+FROM person p
+JOIN drivers_license l ON p.license_id=l.id
+WHERE
+l.gender = 'male'
+AND l.plate_number LIKE '%H42W%'; 
+
+SELECT
+m.person_id
+,m.name
+,m.id
+,c.check_in_date
+,c.check_in_time
+,c.check_out_time
+FROM
+person p
+JOIN get_fit_now_member m ON p.id=m.person_id
+JOIN get_fit_now_check_in c ON m.id=c.membership_id
+WHERE
+c.check_in_date = '20180109'
+AND (c.check_in_time &lt;= (SELECT ci.check_in_time
+						FROM person pin
+						JOIN get_fit_now_member mi ON pin.id=mi.person_id
+						JOIN get_fit_now_check_in ci ON mi.id=ci.membership_id
+						WHERE mi.person_id=16371))
+	AND (c.check_out_time &gt;= (SELECT co.check_in_time
+						FROM person po
+						JOIN get_fit_now_member mo ON po.id=mo.person_id
+						JOIN get_fit_now_check_in co ON mo.id=co.membership_id
+						WHERE mo.person_id=16371))
+;
+
+SELECT *
+FROM interview
+WHERE person_id = 67318;
+
+SELECT
+p.id
+,p.name
+,l.gender
+,l.height
+,l.hair_color
+,l.car_make
+,l.car_model
+,f.event_name
+FROM person p 
+JOIN drivers_license l ON p.license_id=l.id
+JOIN income i ON p.ssn=i.ssn
+JOIN facebook_event_checkin f ON p.id=f.person_id
+WHERE
+l.gender='female'
+AND (l.height BETWEEN 65 AND 67)
+AND l.hair_color = 'red'
+AND car_make = 'Tesla'
+AND car_model = 'Model S'
+AND f.event_name = 'SQL Symphony Concert'
+AND (f.date BETWEEN 20171201 AND 20171231)
+GROUP BY
+p.id
+,p.name
+,l.gender
+,l.height
+,l.hair_color
+,l.car_make
+,l.car_model
+,f.event_name
+HAVING count(*)=3
+
+
+</sql><current_tab id="0"/></tab_sql></sqlb_project>

@@ -1,11 +1,10 @@
--- ============================================
 -- SQL MURDER MYSTERY - Investigation Log
--- Autor: Juan Jose Carrascal Pinzón
--- Fecha del crimen: 15 de enero de 2018, SQL City
+-- Author: Juan Jose Carrascal Pinzon
+-- Crime date: January 15, 2018, SQL City
 -- ============================================
 
--- PASO 1: Obtener el reporte del crimen
--- Buscamos el reporte de tipo "murder" ocurrido el 15/01/2018 en SQL City
+-- STEP 1: Retrieve the crime scene report
+-- Looking for a "murder" report that occurred on 01/15/2018 in SQL City
 SELECT
     date
     ,type
@@ -16,52 +15,52 @@ WHERE date = 20180115
     AND type LIKE 'murder'
     AND city LIKE 'SQL City';
 
--- Resultado: el reporte menciona 2 testigos:
--- 1) El primero vive en la última casa de "Northwestern Dr"
--- 2) Annabel, que vive en "Franklin Ave"
+-- Result: the report mentions 2 witnesses:
+-- 1) The first one lives at the last house on "Northwestern Dr"
+-- 2) Annabel, who lives somewhere on "Franklin Ave"
 
 
--- PASO 2: Identificar al primer testigo (última casa de Northwestern Dr)
+-- STEP 2: Identify the first witness (last house on Northwestern Dr)
 SELECT *
 FROM person
 WHERE address_street_name = 'Northwestern Dr'
 ORDER BY address_number DESC
 LIMIT 1;
 
--- Resultado: Morty Schapiro (person_id 14887)
+-- Result: Morty Schapiro (person_id 14887)
 
 
--- PASO 3: Identificar a la segunda testigo (Annabel en Franklin Ave)
+-- STEP 3: Identify the second witness (Annabel on Franklin Ave)
 SELECT *
 FROM person
 WHERE address_street_name = 'Franklin Ave'
     AND name LIKE '%Annabel%';
 
--- Resultado: Annabel Miller (person_id 16371)
+-- Result: Annabel Miller (person_id 16371)
 
 
--- PASO 4: Consultar los testimonios de ambos testigos
+-- STEP 4: Check both witnesses' interviews
 SELECT *
 FROM interview
 WHERE person_id IN (14887, 16371);
 
--- Resultado clave:
--- - El asesino es hombre, miembro "gold" de Get Fit Now Gym
--- - Su membresía empieza con "48Z"
--- - Su placa de carro incluye "H42W"
--- - Estuvo en el gimnasio el 9 de enero de 2018
+-- Key findings:
+-- - The killer is male, a gold member of Get Fit Now Gym
+-- - His membership number starts with "48Z"
+-- - His license plate includes "H42W"
+-- - He was at the gym on January 9, 2018
 
 
--- PASO 5: Buscar sospechosos por membresía de gimnasio (gold, prefijo 48Z)
+-- STEP 5: Search for gym members matching the clues (gold, prefix 48Z)
 SELECT *
 FROM get_fit_now_member
 WHERE id LIKE '48Z%'
     AND membership_status = 'gold';
 
--- Resultado: 2 sospechosos -> Joe Germuska (28819) y Jeremy Bowers (67318)
+-- Result: 2 suspects -> Joe Germuska (28819) and Jeremy Bowers (67318)
 
 
--- PASO 6: Cruzar sospechosos con la placa del carro (contiene "H42W", género masculino)
+-- STEP 6: Cross reference suspects with the license plate (contains "H42W", male)
 SELECT
     p.name
     ,p.license_id
@@ -72,11 +71,11 @@ JOIN drivers_license l ON p.license_id = l.id
 WHERE l.gender = 'male'
     AND l.plate_number LIKE '%H42W%';
 
--- Resultado: Tushar Chandra y Jeremy Bowers
--- Jeremy Bowers se repite en ambas búsquedas (gimnasio + placa)
+-- Result: Tushar Chandra and Jeremy Bowers
+-- Jeremy Bowers appears in both searches (gym + license plate)
 
 
--- PASO 7: Verificar el check-in del gimnasio el 9 de enero (antes/durante el de Annabel)
+-- STEP 7: Verify the gym check in on January 9 (before/during Annabel's check in)
 SELECT
     m.person_id
     ,m.name
@@ -103,21 +102,21 @@ WHERE c.check_in_date = '20180109'
         WHERE mo.person_id = 16371
     ));
 
--- Resultado: Joe Germuska y Jeremy Bowers coinciden en el check-in
--- Jeremy Bowers aparece en las 3 pistas (membresía, placa, check-in) -> sospechoso confirmado
+-- Result: Joe Germuska and Jeremy Bowers match the check in window
+-- Jeremy Bowers appears in all 3 clues (membership, plate, check in) -> confirmed suspect
 
 
--- PASO 8: Confesión de Jeremy Bowers
+-- STEP 8: Jeremy Bowers' confession
 SELECT *
 FROM interview
 WHERE person_id = 67318;
 
--- Resultado: Jeremy confiesa que fue contratado por una mujer:
--- rica, entre 65" y 67" de altura, pelo rojo, maneja un Tesla Model S,
--- asistió al "SQL Symphony Concert" 3 veces en diciembre de 2017
+-- Result: Jeremy confesses he was hired by a woman:
+-- rich, between 65" and 67" tall, red hair, drives a Tesla Model S,
+-- attended the "SQL Symphony Concert" 3 times in December 2017
 
 
--- PASO 9: Identificar a la contratante del asesinato
+-- STEP 9: Identify the person who hired the killer
 SELECT
     p.id
     ,p.name
@@ -150,6 +149,6 @@ GROUP BY
 HAVING count(*) = 3;
 
 -- ============================================
--- RESULTADO FINAL: Miranda Priestly (person_id 99716)
--- contrató a Jeremy Bowers para cometer el asesinato.
+-- FINAL RESULT: Miranda Priestly (person_id 99716)
+-- hired Jeremy Bowers to commit the murder.
 -- ============================================

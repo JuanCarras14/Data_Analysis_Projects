@@ -21,8 +21,9 @@ Each folder contains independent projects, each with its own README describing t
 ## Featured projects
 
 - **[SQL Murder Mystery](./SQL/sql_murder_mystery)**: a full investigation solved using SQL queries (joins, subqueries, aggregations) against a relational database.
+- **[Data Jobs Dashboard](./PowerBI/data_jobs_dashboard)**: a Power BI dashboard analyzing the data job market, shown across two versions that reflect growth in data modeling, DAX, and dashboard design.
 
 ## Contact
 
-Juan José Carrascal Pinzón
+Juan Jose Carrascal Pinzón
 juan.jose.carpi@hotmail.com

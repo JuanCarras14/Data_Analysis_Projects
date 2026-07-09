@@ -23,12 +23,22 @@ env/
 # Logs
 *.log
 
-# Sales Analytics Pipeline project (raw/processed CSVs are reproducible via
-# Python/sales_analytics_pipeline/generate_and_load_data.py; the .db itself
-# IS committed under SQL/sales_analytics_pipeline/database/ so the SQL and
-# Power BI stages work immediately without rerunning anything)
+# Synthetic-data projects: raw/processed CSVs are reproducible by rerunning
+# each project's generate_and_load_data.py; the .db itself IS committed
+# under SQL/<project>/database/ so SQL and Power BI work without rerunning anything
 Python/sales_analytics_pipeline/data/raw/
 Python/sales_analytics_pipeline/data/processed/
+Python/customer_retention_behavior/data/raw/
+Python/customer_retention_behavior/data/processed/
+Python/industry_operations_cost/data/raw/
+Python/industry_operations_cost/data/processed/
+Python/supply_chain_inventory/data/raw/
+Python/supply_chain_inventory/data/processed/
+
+# Wastewater project uses a real dataset (UCI) - raw CSV is the actual
+# source data and IS committed; only the processed copy is regenerated
+# by load_and_clean.py, so that one's ignored like the others
+Python/wastewater_effluent_quality/data/processed/
 
 # Personal study notes, not part of the portfolio
 learning-notes/

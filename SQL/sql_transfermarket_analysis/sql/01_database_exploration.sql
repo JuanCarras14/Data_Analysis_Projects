@@ -97,7 +97,7 @@ ORDER BY avg_market_value DESC;
 /*
 Objective:
 Calculate the average market value per country of citizenship,
-keeping only countries with an above-average number of players.
+keeping only countries with at least 200 players in the dataset.
 This filters out countries with very few players, which would
 otherwise produce unreliable or misleading average values.
 */
@@ -109,17 +109,7 @@ WHERE position <> 'Missing'
 AND market_value_in_eur IS NOT NULL
 AND country_of_citizenship IS NOT NULL
 GROUP BY country_of_citizenship
-HAVING COUNT(*) >
-(
-    SELECT AVG(total_players)
-    FROM
-    (
-        SELECT COUNT(*) AS total_players
-        FROM players
-        WHERE country_of_citizenship IS NOT NULL
-        GROUP BY country_of_citizenship
-    ) AS country_counts
-)
+HAVING COUNT(*) >= 200
 ORDER BY avg_market_value DESC;
 
 

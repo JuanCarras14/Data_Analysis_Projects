@@ -22,3 +22,10 @@ env/
 
 # Logs
 *.log
+
+# Sales Analytics Pipeline project (raw/processed CSVs are reproducible via
+# Python/sales_analytics_pipeline/generate_and_load_data.py; the .db itself
+# IS committed under SQL/sales_analytics_pipeline/database/ so the SQL and
+# Power BI stages work immediately without rerunning anything)
+Python/sales_analytics_pipeline/data/raw/
+Python/sales_analytics_pipeline/data/processed/

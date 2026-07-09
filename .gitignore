@@ -29,3 +29,6 @@ env/
 # Power BI stages work immediately without rerunning anything)
 Python/sales_analytics_pipeline/data/raw/
 Python/sales_analytics_pipeline/data/processed/
+
+# Personal study notes, not part of the portfolio
+learning-notes/

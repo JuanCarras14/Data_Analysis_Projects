@@ -2,11 +2,11 @@
 # Author: Juan Jose Carrascal Pinzon
 #
 # Builds a fake sales dataset (customers, products, orders), adds dirty
-# data on purpose, cleans it with pandas, and loads it into SQLite.
+# data on purpose, and cleans it with pandas. The clean CSVs are what
+# Excel/sales_analytics_pipeline reads for the analysis.
 #
 # Run: python generate_and_load_data.py
 
-import sqlite3
 import random
 from pathlib import Path
 from datetime import datetime, timedelta
@@ -25,15 +25,12 @@ N_ORDERS = 6000
 
 # Paths relative to this file, so it works from any clone.
 THIS_PROJECT_DIR = Path(__file__).resolve().parent          # Python/sales_analytics_pipeline
-REPO_ROOT = THIS_PROJECT_DIR.parent.parent                    # Data-Analysis-Projects
 
 RAW_DIR = THIS_PROJECT_DIR / "data" / "raw"
 PROCESSED_DIR = THIS_PROJECT_DIR / "data" / "processed"
-DB_PATH = REPO_ROOT / "SQL" / "sales_analytics_pipeline" / "database" / "sales_warehouse.db"
 
 RAW_DIR.mkdir(parents=True, exist_ok=True)
 PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
-DB_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 # ---------------------------------------------------------------------------
 # Reference lists used to build fake but realistic-looking records
@@ -279,21 +276,9 @@ def main():
     orders_clean.to_csv(PROCESSED_DIR / "orders_clean.csv", index=False)
     print(f"  saved clean csvs to {PROCESSED_DIR}")
 
-    print("\nLoading clean tables into SQLite...")
-    if DB_PATH.exists():
-        DB_PATH.unlink()  # start fresh every time this runs
-
-    conn = sqlite3.connect(DB_PATH)
-    try:
-        customers_clean.to_sql("customers", conn, index=False, if_exists="replace")
-        products_clean.to_sql("products", conn, index=False, if_exists="replace")
-        orders_clean.to_sql("orders", conn, index=False, if_exists="replace")
-        conn.commit()
-    finally:
-        conn.close()
-
-    print(f"  database saved to {DB_PATH}")
-    print("\nDone! Now go run the queries in SQL/sales_analytics_pipeline/analytics_queries.sql")
+    print("\nDone! Clean CSVs are ready in data/processed/ -")
+    print("open Excel/sales_analytics_pipeline/sales_analysis.xlsx for the analysis,")
+    print("or re-import the 3 clean CSVs there if you regenerated the data.")
 
 
 if __name__ == "__main__":

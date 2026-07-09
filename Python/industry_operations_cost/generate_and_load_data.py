@@ -3,11 +3,11 @@
 #
 # Generates a fake manufacturing plant: 6 production lines, a year of daily
 # production logs (for OEE - Overall Equipment Effectiveness), and monthly
-# cost breakdowns. Adds dirty data on purpose, cleans it, loads into SQLite.
+# cost breakdowns. Adds dirty data on purpose, cleans it with pandas. The
+# clean CSVs feed the Excel analysis (no SQL in this project).
 #
 # Run: python generate_and_load_data.py
 
-import sqlite3
 import random
 from pathlib import Path
 from datetime import datetime, timedelta
@@ -25,15 +25,12 @@ END_DATE = datetime(2024, 12, 31)
 PLANNED_MINUTES_PER_DAY = 8 * 60  # one 8-hour shift per line per day
 
 THIS_PROJECT_DIR = Path(__file__).resolve().parent
-REPO_ROOT = THIS_PROJECT_DIR.parent.parent
 
 RAW_DIR = THIS_PROJECT_DIR / "data" / "raw"
 PROCESSED_DIR = THIS_PROJECT_DIR / "data" / "processed"
-DB_PATH = REPO_ROOT / "SQL" / "industry_operations_cost" / "database" / "operations.db"
 
 RAW_DIR.mkdir(parents=True, exist_ok=True)
 PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
-DB_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 AREAS = ["Assembly", "Packaging", "Machining"]
 DOWNTIME_REASONS = ["Changeover", "Mechanical Failure", "Material Shortage", "Planned Maintenance", "Operator Break"]
@@ -170,20 +167,11 @@ def main():
     lines.to_csv(PROCESSED_DIR / "lines_clean.csv", index=False)
     production_clean.to_csv(PROCESSED_DIR / "production_log_clean.csv", index=False)
     costs_clean.to_csv(PROCESSED_DIR / "monthly_costs_clean.csv", index=False)
+    print(f"  saved clean csvs to {PROCESSED_DIR}")
 
-    print("\nLoading into SQLite...")
-    if DB_PATH.exists():
-        DB_PATH.unlink()
-    conn = sqlite3.connect(DB_PATH)
-    try:
-        lines.to_sql("lines", conn, index=False, if_exists="replace")
-        production_clean.to_sql("production_log", conn, index=False, if_exists="replace")
-        costs_clean.to_sql("monthly_costs", conn, index=False, if_exists="replace")
-        conn.commit()
-    finally:
-        conn.close()
-    print(f"  database saved to {DB_PATH}")
-    print("\nDone! Now go run the queries in SQL/industry_operations_cost/analytics_queries.sql")
+    print("\nDone! Clean CSVs are ready in data/processed/ -")
+    print("open Excel/industry_operations_cost/operations_analysis.xlsx for the analysis,")
+    print("or re-import the 3 clean CSVs there if you regenerated the data.")
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 # Industry Operations & Cost Optimization - Power BI Dashboard
 
-Dashboard built on top of the SQL analysis from [SQL/industry_operations_cost](../../SQL/industry_operations_cost).
+Dashboard built on top of the Excel analysis from [Excel/industry_operations_cost](../../Excel/industry_operations_cost).
 
 ## Project Status
 

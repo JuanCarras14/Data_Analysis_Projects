@@ -9,6 +9,7 @@ The project is organized as a real-world analytics workflow:
 1. Data Exploration
 2. Data Quality Assessment
 3. Business Analysis
+4. Power BI Dashboard (separate folder, in progress)
 
 ## Dataset
 
@@ -21,10 +22,21 @@ Transfermarkt Football Dataset
 - Git
 - GitHub
 
+## Findings (Phase 3)
+
+- Transfer spending has grown a lot season over season, with the biggest jumps in the last decade.
+- Most expensive transfer in the dataset: Neymar, Barcelona to PSG, €222M (17/18).
+- Chelsea, Man City and Man Utd are the top spenders overall.
+- Every top-10 spending club has a negative net balance (they spend far more buying than they make selling).
+- Attackers have the highest average transfer fee, goalkeepers the lowest.
+- Premier League clubs spend the most on transfers by a wide margin, ahead of Serie A and LaLiga.
+
 ## Project Status
 
 🟢 Phase 1 - Data Exploration (Completed)
 
 🟢 Phase 2 - Data Quality Assessment (Completed)
 
-🟡 Phase 3 - Business Analysis (In Progress)
+🟢 Phase 3 - Business Analysis (Completed)
+
+🔴 Power BI Dashboard - see [PowerBI/sql_transfermarket_analysis](../../PowerBI/sql_transfermarket_analysis) (not started)

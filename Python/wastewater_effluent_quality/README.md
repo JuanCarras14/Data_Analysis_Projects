@@ -27,6 +27,14 @@ pip install -r requirements.txt
 python load_and_clean.py
 ```
 
+## What I found
+
+Once the cleaned data is in SQLite, the [SQL part](../../SQL/wastewater_effluent_quality) answers the actual questions. A few things that stood out:
+
+- The plant met discharge limits on about 95% of the days (only ~5% went over at least one reference limit).
+- The biological (secondary) stage does most of the work — around 83.6% average BOD removal, vs ~37.8% in the primary settler.
+- Something I didn't expect: the days tagged as "overloaded" actually had the best average removal (90.8%). I'd want to look into that more before drawing conclusions.
+
 ## Project Status
 
 🟢 Done

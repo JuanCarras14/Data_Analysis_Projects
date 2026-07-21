@@ -10,90 +10,67 @@
 -- "2024-12-31" is used below as the analysis cutoff date ("today").
 
 
--- STEP 1: Cohort retention (CTEs)
--- Objective: group customers by the month of their first transaction (their
--- "cohort"), then track what % of each cohort is still buying N months later.
-WITH customer_cohort AS (
-    SELECT
-        customer_id
-        ,strftime('%Y-%m', MIN(transaction_date)) AS cohort_month
-    FROM transactions
-    GROUP BY customer_id
-),
-tx_with_cohort AS (
-    SELECT
-        t.customer_id
-        ,c.cohort_month
-        ,(CAST(strftime('%Y', t.transaction_date) AS INT) - CAST(substr(c.cohort_month, 1, 4) AS INT)) * 12
-            + (CAST(strftime('%m', t.transaction_date) AS INT) - CAST(substr(c.cohort_month, 6, 2) AS INT)) AS month_number
-    FROM transactions t
-    JOIN customer_cohort c ON t.customer_id = c.customer_id
-),
-cohort_size AS (
-    SELECT cohort_month, COUNT(DISTINCT customer_id) AS total_customers
-    FROM tx_with_cohort
-    WHERE month_number = 0
-    GROUP BY cohort_month
-)
+-- STEP 1: Retention by signup cohort
+-- Objective: group customers by the month they signed up, then check how many
+-- of each group are still active (bought in the last 60 days before the cutoff).
+-- A LEFT JOIN keeps every customer; a CASE inside COUNT(DISTINCT ...) counts only
+-- the ones with a recent purchase.
 SELECT
-    tw.cohort_month
-    ,tw.month_number
-    ,COUNT(DISTINCT tw.customer_id) AS active_customers
-    ,cs.total_customers AS cohort_size
-    ,ROUND(100.0 * COUNT(DISTINCT tw.customer_id) / cs.total_customers, 1) AS retention_pct
-FROM tx_with_cohort tw
-JOIN cohort_size cs ON tw.cohort_month = cs.cohort_month
-GROUP BY tw.cohort_month, tw.month_number
-ORDER BY tw.cohort_month, tw.month_number;
+    strftime('%Y-%m', c.signup_date) AS signup_month
+    ,COUNT(DISTINCT c.customer_id) AS customers
+    ,COUNT(DISTINCT CASE
+        WHEN julianday('2024-12-31') - julianday(t.transaction_date) <= 60
+        THEN c.customer_id END) AS still_active
+    ,ROUND(100.0 * COUNT(DISTINCT CASE
+        WHEN julianday('2024-12-31') - julianday(t.transaction_date) <= 60
+        THEN c.customer_id END) / COUNT(DISTINCT c.customer_id), 1) AS active_pct
+FROM customers c
+LEFT JOIN transactions t ON c.customer_id = t.customer_id
+GROUP BY signup_month
+ORDER BY signup_month;
 
 
--- STEP 2: RFM base metrics (Recency, Frequency, Monetary)
--- Objective: one row per customer summarizing how recently, how often, and
--- how much they've bought - the standard inputs for customer segmentation.
-WITH customer_stats AS (
-    SELECT
-        customer_id
-        ,MAX(transaction_date) AS last_purchase
-        ,COUNT(*) AS frequency
-        ,ROUND(SUM(amount), 2) AS monetary
-        ,CAST(julianday('2024-12-31') - julianday(MAX(transaction_date)) AS INT) AS recency_days
-    FROM transactions
-    GROUP BY customer_id
-)
-SELECT * FROM customer_stats
+-- STEP 2: Recency, frequency and spend per customer (top 20 by spend)
+-- Objective: one row per customer summarizing how recently, how often and how
+-- much they bought - the standard inputs for customer segmentation.
+SELECT
+    customer_id
+    ,MAX(transaction_date) AS last_purchase
+    ,COUNT(*) AS frequency
+    ,ROUND(SUM(amount), 2) AS monetary
+    ,CAST(julianday('2024-12-31') - julianday(MAX(transaction_date)) AS INT) AS recency_days
+FROM transactions
+GROUP BY customer_id
 ORDER BY monetary DESC
 LIMIT 20;
 
 
--- STEP 3: RFM segments
--- Objective: turn the raw R/F/M numbers into labels a non-technical
--- stakeholder can act on.
-WITH customer_stats AS (
-    SELECT
-        customer_id
-        ,COUNT(*) AS frequency
-        ,ROUND(SUM(amount), 2) AS monetary
-        ,CAST(julianday('2024-12-31') - julianday(MAX(transaction_date)) AS INT) AS recency_days
-    FROM transactions
-    GROUP BY customer_id
-),
-segmented AS (
-    SELECT
-        *
-        ,CASE
-            WHEN recency_days <= 60 AND frequency >= 5 THEN 'Loyal'
-            WHEN recency_days <= 60 THEN 'Active'
-            WHEN recency_days BETWEEN 61 AND 180 THEN 'At Risk'
-            ELSE 'Churned'
-        END AS segment
-    FROM customer_stats
-)
+-- STEP 3: Customer segments (Loyal / Active / At Risk / Churned)
+-- Objective: turn the raw recency/frequency numbers into labels a non-technical
+-- stakeholder can act on, then count and average each segment.
+-- The inner query builds one row per customer with a segment label; the outer
+-- query groups those rows by segment.
 SELECT
     segment
     ,COUNT(*) AS customers
     ,ROUND(AVG(frequency), 1) AS avg_orders
     ,ROUND(AVG(monetary), 2) AS avg_monetary
-FROM segmented
+FROM (
+    SELECT
+        customer_id
+        ,COUNT(*) AS frequency
+        ,ROUND(SUM(amount), 2) AS monetary
+        ,CAST(julianday('2024-12-31') - julianday(MAX(transaction_date)) AS INT) AS recency_days
+        ,CASE
+            WHEN CAST(julianday('2024-12-31') - julianday(MAX(transaction_date)) AS INT) <= 60
+                 AND COUNT(*) >= 5 THEN 'Loyal'
+            WHEN CAST(julianday('2024-12-31') - julianday(MAX(transaction_date)) AS INT) <= 60 THEN 'Active'
+            WHEN CAST(julianday('2024-12-31') - julianday(MAX(transaction_date)) AS INT) BETWEEN 61 AND 180 THEN 'At Risk'
+            ELSE 'Churned'
+        END AS segment
+    FROM transactions
+    GROUP BY customer_id
+) AS customer_stats
 GROUP BY segment
 ORDER BY avg_monetary DESC;
 

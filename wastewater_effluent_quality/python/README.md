@@ -22,7 +22,7 @@ Every other project in this repo either generates synthetic dirty data or works 
 ## How to run
 
 ```bash
-cd Python/wastewater_effluent_quality
+cd wastewater_effluent_quality/python
 pip install -r requirements.txt
 python load_and_clean.py
 ```

@@ -44,21 +44,18 @@ GROUP BY sup.supplier_id, sup.supplier_name, sup.region
 ORDER BY on_time_pct ASC;
 
 
--- STEP 3: Current inventory value by category (CTE)
+-- STEP 3: Current inventory value by category
 -- Objective: how much money is sitting on the shelf right now, by category.
-WITH latest_snapshot AS (
-    SELECT product_id, MAX(snapshot_date) AS latest_date
-    FROM inventory_snapshots
-    GROUP BY product_id
-)
+-- "Current" = the most recent weekly snapshot date, found with a small
+-- subquery in the WHERE clause.
 SELECT
     p.category
     ,COUNT(DISTINCT p.product_id) AS products
     ,SUM(s.stock_on_hand) AS total_units_on_hand
     ,ROUND(SUM(s.stock_on_hand * p.unit_cost), 2) AS inventory_value
-FROM latest_snapshot ls
-JOIN inventory_snapshots s ON ls.product_id = s.product_id AND ls.latest_date = s.snapshot_date
+FROM inventory_snapshots s
 JOIN products p ON s.product_id = p.product_id
+WHERE s.snapshot_date = (SELECT MAX(snapshot_date) FROM inventory_snapshots)
 GROUP BY p.category
 ORDER BY inventory_value DESC;
 

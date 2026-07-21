@@ -19,7 +19,7 @@ Other parts: [Excel](../excel)
 ## How to run
 
 ```bash
-cd Python/industry_operations_cost
+cd industry_operations_cost/python
 pip install -r requirements.txt
 python generate_and_load_data.py
 ```

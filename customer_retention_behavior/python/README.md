@@ -22,7 +22,7 @@ Random, independent transactions per customer wouldn't produce a realistic reten
 ## How to run
 
 ```bash
-cd Python/customer_retention_behavior
+cd customer_retention_behavior/python
 pip install -r requirements.txt
 python generate_and_load_data.py
 ```

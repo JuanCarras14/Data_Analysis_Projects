@@ -14,7 +14,7 @@ Other parts: [Python](../python)
 
 1. Stockout rate by product, worst first.
 2. Supplier on-time delivery performance.
-3. Current inventory value by category (CTE).
+3. Current inventory value by category.
 4. Extra: purchase orders with no supplier on record (data quality check).
 
 ## Findings
@@ -27,7 +27,7 @@ Other parts: [Python](../python)
 ## How to run
 
 ```bash
-cd SQL/supply_chain_inventory
+cd supply_chain_inventory/sql
 sqlite3 database/supply_chain.db < analytics_queries.sql
 ```
 

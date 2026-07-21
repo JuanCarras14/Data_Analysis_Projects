@@ -22,7 +22,7 @@ Every week's stock level depends on last week's stock level plus this week's dem
 ## How to run
 
 ```bash
-cd Python/supply_chain_inventory
+cd supply_chain_inventory/python
 pip install -r requirements.txt
 python generate_and_load_data.py
 ```

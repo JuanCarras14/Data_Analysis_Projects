@@ -28,7 +28,7 @@ Data-Analysis-Projects/
 
 - **[Data Jobs Dashboard](./data_jobs_dashboard)** (Power BI) - a dashboard on the 2024 data job market (salaries, distribution, remote work, top skills), in two versions that show how my data modeling and DAX improved between them. Includes screenshots.
 - **[Sales & Customer Analytics Pipeline](./sales_analytics_pipeline)** (Python + Excel) - Python generates and cleans a synthetic sales dataset, Excel analyzes it with formulas (SUMIFS/VLOOKUP/LARGE).
-- **[Football Transfer Market Analysis](./football_transfer_market)** (SQL) - analysis of real transfer-market data: exploration, quality checks, and business questions with joins and CTEs.
+- **[Football Transfer Market Analysis](./football_transfer_market)** (SQL) - analysis of real transfer-market data: exploration, quality checks, and business questions with joins and subqueries.
 - **[Customer Retention & Behavior](./customer_retention_behavior)** (Python + SQL) - Python simulates a customer base with realistic churn, SQL builds cohort retention curves and RFM segments.
 - **[Industry Operations & Cost Optimization](./industry_operations_cost)** (Python + Excel) - Python simulates production lines, Excel calculates OEE and cost per unit by line.
 - **[Supply Chain & Inventory Optimization](./supply_chain_inventory)** (Python + SQL) - Python runs a week-by-week inventory simulation, SQL analyzes stockout rates and supplier on-time performance.

@@ -39,21 +39,17 @@ WHERE effluent_bod_mgl > 40 OR effluent_cod_mgl > 160 OR effluent_ss_mgl > 60
 ORDER BY day_id;
 
 
--- STEP 3: Compliance rate (CTE)
+-- STEP 3: Compliance rate
 -- Objective: what % of monitored days broke at least one of the 3 limits above.
-WITH flagged AS (
-    SELECT
-        day_id
-        ,CASE WHEN effluent_bod_mgl > 40 OR effluent_cod_mgl > 160 OR effluent_ss_mgl > 60
-              THEN 1 ELSE 0 END AS exceeds_limits
-    FROM plant_readings
-    WHERE effluent_bod_mgl IS NOT NULL OR effluent_cod_mgl IS NOT NULL OR effluent_ss_mgl IS NOT NULL
-)
+-- A CASE inside SUM counts the days over the limit; dividing by COUNT(*) gives the rate.
 SELECT
     COUNT(*) AS days_checked
-    ,SUM(exceeds_limits) AS days_over_limit
-    ,ROUND(100.0 * SUM(exceeds_limits) / COUNT(*), 1) AS pct_days_over_limit
-FROM flagged;
+    ,SUM(CASE WHEN effluent_bod_mgl > 40 OR effluent_cod_mgl > 160 OR effluent_ss_mgl > 60
+             THEN 1 ELSE 0 END) AS days_over_limit
+    ,ROUND(100.0 * SUM(CASE WHEN effluent_bod_mgl > 40 OR effluent_cod_mgl > 160 OR effluent_ss_mgl > 60
+             THEN 1 ELSE 0 END) / COUNT(*), 1) AS pct_days_over_limit
+FROM plant_readings
+WHERE effluent_bod_mgl IS NOT NULL OR effluent_cod_mgl IS NOT NULL OR effluent_ss_mgl IS NOT NULL;
 
 
 -- STEP 4: Effluent quality by plant operating status
@@ -89,13 +85,14 @@ UNION ALL
 SELECT 'removal_bod_global_pct', COUNT(*) - COUNT(removal_bod_global_pct) FROM plant_readings;
 
 
--- STEP 7: 7-day rolling average of effluent BOD (window function)
--- Objective: daily readings are noisy - a rolling average makes the real
--- trend easier to see than one bad/good day.
+-- STEP 7: Average effluent BOD by month
+-- Objective: a simple month-by-month trend of treated-water quality, so a
+-- single noisy day doesn't drive the story.
 SELECT
-    day_id
-    ,sample_date
-    ,effluent_bod_mgl
-    ,ROUND(AVG(effluent_bod_mgl) OVER (ORDER BY day_id ROWS BETWEEN 6 PRECEDING AND CURRENT ROW), 1) AS bod_7day_avg
+    strftime('%Y-%m', sample_date) AS month
+    ,COUNT(*) AS days
+    ,ROUND(AVG(effluent_bod_mgl), 1) AS avg_effluent_bod
 FROM plant_readings
-ORDER BY day_id;
+WHERE effluent_bod_mgl IS NOT NULL
+GROUP BY month
+ORDER BY month;

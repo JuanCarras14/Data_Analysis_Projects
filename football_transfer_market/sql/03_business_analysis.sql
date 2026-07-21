@@ -71,37 +71,31 @@ LIMIT 10;
 
 /*
 Objective:
-Net transfer balance per club (income from sales minus money spent
-buying players). Built with two CTEs, one for spending and one for
-income, joined together on club name.
+Net transfer balance per club (income from sales minus money spent buying
+players). Built from two small subqueries - one totals spending per club,
+the other totals income per club - joined together on club name.
 
 Finding:
 The 10 clubs below all have a negative balance, meaning they spend
 far more on buying players than they make selling them.
 */
-WITH spending AS (
-    SELECT
-        to_club_name AS club_name
-        , SUM(CAST(transfer_fee AS REAL)) AS total_spent
+SELECT
+    spending.club_name
+    , spending.total_spent
+    , COALESCE(income.total_income, 0) AS total_income
+    , ROUND(COALESCE(income.total_income, 0) - spending.total_spent, 0) AS net_balance
+FROM (
+    SELECT to_club_name AS club_name, SUM(CAST(transfer_fee AS REAL)) AS total_spent
     FROM transfers
     WHERE transfer_fee IS NOT NULL
     GROUP BY to_club_name
-),
-income AS (
-    SELECT
-        from_club_name AS club_name
-        , SUM(CAST(transfer_fee AS REAL)) AS total_income
+) AS spending
+LEFT JOIN (
+    SELECT from_club_name AS club_name, SUM(CAST(transfer_fee AS REAL)) AS total_income
     FROM transfers
     WHERE transfer_fee IS NOT NULL
     GROUP BY from_club_name
-)
-SELECT
-    s.club_name
-    , s.total_spent
-    , COALESCE(i.total_income, 0) AS total_income
-    , ROUND(COALESCE(i.total_income, 0) - s.total_spent, 0) AS net_balance
-FROM spending s
-LEFT JOIN income i ON s.club_name = i.club_name
+) AS income ON spending.club_name = income.club_name
 ORDER BY net_balance ASC
 LIMIT 10;
 

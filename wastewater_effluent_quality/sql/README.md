@@ -18,11 +18,11 @@ Real daily sensor readings from an urban wastewater plant: influent quality, pri
 
 1. Effluent quality summary (averages).
 2. Days that exceeded reference discharge limits.
-3. Overall compliance rate (CTE).
+3. Overall compliance rate.
 4. Effluent quality by plant operating status.
 5. Primary vs secondary stage - which one removes more BOD.
 6. Missing sensor readings audit.
-7. 7-day rolling average of effluent BOD (window function).
+7. Average effluent BOD by month.
 
 ## Findings
 
@@ -34,7 +34,7 @@ Real daily sensor readings from an urban wastewater plant: influent quality, pri
 ## How to run
 
 ```bash
-cd SQL/wastewater_effluent_quality
+cd wastewater_effluent_quality/sql
 sqlite3 database/wastewater.db < analytics_queries.sql
 ```
 

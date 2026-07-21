@@ -24,23 +24,23 @@ env/
 *.log
 
 # Synthetic-data projects: raw/processed CSVs are reproducible by rerunning
-# each project's generate_and_load_data.py. Where the project still uses SQL
+# each project's python/generate_and_load_data.py. Where the project also uses SQL
 # (customer_retention_behavior, supply_chain_inventory) the .db IS committed
-# under SQL/<project>/database/; where it uses Excel instead (sales_analytics_pipeline,
-# industry_operations_cost) the .xlsx workbook under Excel/<project>/ IS committed
-Python/sales_analytics_pipeline/data/raw/
-Python/sales_analytics_pipeline/data/processed/
-Python/customer_retention_behavior/data/raw/
-Python/customer_retention_behavior/data/processed/
-Python/industry_operations_cost/data/raw/
-Python/industry_operations_cost/data/processed/
-Python/supply_chain_inventory/data/raw/
-Python/supply_chain_inventory/data/processed/
+# under <project>/sql/database/; where it uses Excel instead (sales_analytics_pipeline,
+# industry_operations_cost) the .xlsx workbook under <project>/excel/ IS committed
+sales_analytics_pipeline/python/data/raw/
+sales_analytics_pipeline/python/data/processed/
+customer_retention_behavior/python/data/raw/
+customer_retention_behavior/python/data/processed/
+industry_operations_cost/python/data/raw/
+industry_operations_cost/python/data/processed/
+supply_chain_inventory/python/data/raw/
+supply_chain_inventory/python/data/processed/
 
 # Wastewater project uses a real dataset (UCI) - raw CSV is the actual
 # source data and IS committed; only the processed copy is regenerated
 # by load_and_clean.py, so that one's ignored like the others
-Python/wastewater_effluent_quality/data/processed/
+wastewater_effluent_quality/python/data/processed/
 
 # Personal study notes, not part of the portfolio
 learning-notes/

@@ -1,6 +1,6 @@
 # Data Analysis Projects
 
-Chemical engineer moving into data analysis. I built these projects to practice and show what I can do with SQL, Power BI, Python and Excel: querying, cleaning, visualizing, and interpreting data.
+Data Analyst with a chemical-engineering background. I built these projects to practice and show what I can do with SQL, Power BI, Python and Excel: querying, cleaning, visualizing, and interpreting data.
 
 **Tools:** SQL · Power BI (DAX, Power Query) · Python (pandas) · Excel
 

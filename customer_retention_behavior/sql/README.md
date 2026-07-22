@@ -8,7 +8,6 @@ Other parts: [Python](../python)
 
 - SQLite
 - DB Browser for SQLite
-- Git / GitHub
 
 ## Queries (`analytics_queries.sql`)
 

@@ -18,8 +18,6 @@ Transfermarkt Football Dataset
 
 - SQLite
 - DB Browser for SQLite
-- Git
-- GitHub
 
 ## Findings (Phase 3)
 

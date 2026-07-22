@@ -12,7 +12,6 @@ The goal is to reconstruct the investigation from scratch using only SQL queries
 
 - **DB Browser for SQLite**: initial exploration of the database
 - **SQL (SQLite)**: all investigation queries
-- **VSCode + Git/GitHub**: documentation and version control
 
 ## Investigation process
 

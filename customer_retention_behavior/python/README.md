@@ -13,7 +13,7 @@ Other parts: [SQL](../sql)
 
 ## Why simulate churn instead of random transactions
 
-Random, independent transactions per customer wouldn't produce a realistic retention curve - real cohort analysis needs *some* customers to actually stop coming back over time. See `learning-notes/python_guide_customer_retention_behavior.md` for the full reasoning.
+Random, independent transactions per customer wouldn't produce a realistic retention curve - real cohort analysis needs *some* customers to actually stop coming back over time.
 
 ## Tools
 

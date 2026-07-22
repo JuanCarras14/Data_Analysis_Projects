@@ -13,7 +13,7 @@ Other parts: [SQL](../sql)
 
 ## Why this one is cleaned differently
 
-Every other project in this repo either generates synthetic dirty data or works with a small, mostly-complete real dataset. This one is real sensor data with real gaps - almost every row is missing at least one of the 38 readings. Dropping incomplete rows would gut the dataset, and guessing values for a chemistry reading could hide a real plant problem. So here, missing values are left as `NULL` and reported (not dropped, not filled) - see `learning-notes/python_guide_wastewater_effluent_quality.md` for the reasoning.
+Every other project in this repo either generates synthetic dirty data or works with a small, mostly-complete real dataset. This one is real sensor data with real gaps - almost every row is missing at least one of the 38 readings. Dropping incomplete rows would gut the dataset, and guessing values for a chemistry reading could hide a real plant problem. So here, missing values are left as `NULL` and reported, not dropped or filled.
 
 ## Tools
 

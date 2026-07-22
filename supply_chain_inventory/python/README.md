@@ -13,7 +13,7 @@ Other parts: [SQL](../sql)
 
 ## Why this one uses a loop instead of vectorized pandas
 
-Every week's stock level depends on last week's stock level plus this week's demand and any order that arrived - that's a genuinely sequential process, not something `df["a"] * df["b"]`-style column math can express. See `learning-notes/python_guide_supply_chain_inventory.md` for why a loop is the right call here and not the performance trap flagged elsewhere in this repo.
+Every week's stock level depends on last week's stock level plus this week's demand and any order that arrived - that's a genuinely sequential process, not something `df["a"] * df["b"]`-style column math can express.
 
 ## Tools
 

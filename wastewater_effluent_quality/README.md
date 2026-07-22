@@ -2,9 +2,6 @@
 
 The project I'm most proud of: data analysis on real data from an actual urban wastewater treatment plant ([UCI dataset](https://archive.ics.uci.edu/dataset/106/water+treatment+plant), 165 days of sensor readings). It connects my chemical-engineering background with the data toolset.
 
-![Average BOD removal by treatment stage](./images/removal_by_stage.png)
-![Effluent BOD by month vs. reference discharge limit](./images/monthly_bod_trend.png)
-
 ## How each tool is used
 
 - **[Python](./python)** - loads and cleans the raw sensor feed with pandas. Missing readings are kept as `NULL` instead of dropped or guessed, since a gap can mean a real plant problem, then the clean data is loaded into SQLite.

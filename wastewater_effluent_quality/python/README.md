@@ -17,7 +17,7 @@ Every other project in this repo either generates synthetic dirty data or works 
 
 ## Tools
 
-- Python 3.10, pandas, matplotlib, sqlite3
+- Python 3.10, pandas, sqlite3
 
 ## How to run
 
@@ -25,7 +25,6 @@ Every other project in this repo either generates synthetic dirty data or works 
 cd wastewater_effluent_quality/python
 pip install -r requirements.txt
 python load_and_clean.py
-python make_charts.py   # optional: builds the two charts in ../images/
 ```
 
 ## What I found
@@ -35,9 +34,6 @@ Once the cleaned data is in SQLite, the [SQL part](../sql) answers the actual qu
 - The plant met discharge limits on about 95% of the days (only ~5% went over at least one reference limit).
 - The biological (secondary) stage does most of the work - around 83.6% average BOD removal, vs ~37.8% in the primary settler.
 - Something I didn't expect: the days tagged as "overloaded" actually had the best average removal (90.8%). I'd want to look into that more before drawing conclusions.
-
-![Effluent BOD by month vs. reference discharge limit](../images/monthly_bod_trend.png)
-![Average BOD removal by treatment stage](../images/removal_by_stage.png)
 
 ## Project Status
 

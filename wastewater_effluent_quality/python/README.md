@@ -13,7 +13,9 @@ Other parts: [SQL](../sql)
 
 ## Why this one is cleaned differently
 
-Every other project in this repo either generates synthetic dirty data or works with a small, mostly-complete real dataset. This one is real sensor data with real gaps - almost every row is missing at least one of the 38 readings. Dropping incomplete rows would gut the dataset, and guessing values for a chemistry reading could hide a real plant problem. So here, missing values are left as `NULL` and reported, not dropped or filled.
+Every other project in this repo either generates synthetic dirty data or works with a small, mostly-complete real dataset. This one is real sensor data with real gaps - almost every row is missing at least one of the 38 readings. Dropping incomplete rows would gut the dataset, and guessing values for a chemistry reading could hide a real plant problem.
+
+The hard part here wasn't technical, it was the call itself: it would have been easy to just fill the gaps with an average or a zero and move on, but for a chemistry reading that can quietly hide a real plant problem. So missing values stay as `NULL` and get reported instead - the honest answer is "we don't know," not a made-up number.
 
 ## Tools
 

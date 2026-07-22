@@ -11,9 +11,9 @@ Other parts: [SQL](../sql)
 3. Injects dirty data: a few negative stock readings, purchase orders missing a supplier, duplicate orders.
 4. Cleans it and loads `products`, `suppliers`, `inventory_snapshots`, `purchase_orders` into SQLite.
 
-## Why this one uses a loop instead of vectorized pandas
+## Why there's a loop here, even though pandas usually wants vectorized code
 
-Every week's stock level depends on last week's stock level plus this week's demand and any order that arrived - that's a genuinely sequential process, not something `df["a"] * df["b"]`-style column math can express.
+I hesitated before writing this one, since "loops are slow, vectorize instead" is one of the first things you learn about pandas. But every week's stock level depends on last week's stock level plus this week's demand and any order that arrived - that's a genuinely sequential process, not something `df["a"] * df["b"]`-style column math can express. So the loop stays, and it's the right call here, not a shortcut.
 
 ## Tools
 

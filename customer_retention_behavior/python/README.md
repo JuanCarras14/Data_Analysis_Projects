@@ -13,7 +13,7 @@ Other parts: [SQL](../sql)
 
 ## Why simulate churn instead of random transactions
 
-Random, independent transactions per customer wouldn't produce a realistic retention curve - real cohort analysis needs *some* customers to actually stop coming back over time.
+My first instinct was just to generate random transactions per customer, but that doesn't actually produce anything worth analyzing - if every customer keeps buying forever with the same odds every month, there's no retention curve to speak of, just noise. Real cohort analysis needs *some* customers to genuinely stop coming back over time, which is why each customer gets their own "stickiness" here instead.
 
 ## Tools
 

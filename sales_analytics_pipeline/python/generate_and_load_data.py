@@ -24,7 +24,7 @@ N_PRODUCTS = 60
 N_ORDERS = 6000
 
 # Paths relative to this file, so it works from any clone.
-THIS_PROJECT_DIR = Path(__file__).resolve().parent          # Python/sales_analytics_pipeline
+THIS_PROJECT_DIR = Path(__file__).resolve().parent          # sales_analytics_pipeline/python
 
 RAW_DIR = THIS_PROJECT_DIR / "data" / "raw"
 PROCESSED_DIR = THIS_PROJECT_DIR / "data" / "processed"

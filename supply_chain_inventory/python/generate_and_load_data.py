@@ -26,11 +26,10 @@ N_WEEKS = 52
 START_DATE = datetime(2024, 1, 1)
 
 THIS_PROJECT_DIR = Path(__file__).resolve().parent
-REPO_ROOT = THIS_PROJECT_DIR.parent.parent
 
 RAW_DIR = THIS_PROJECT_DIR / "data" / "raw"
 PROCESSED_DIR = THIS_PROJECT_DIR / "data" / "processed"
-DB_PATH = REPO_ROOT / "SQL" / "supply_chain_inventory" / "database" / "supply_chain.db"
+DB_PATH = THIS_PROJECT_DIR.parent / "sql" / "database" / "supply_chain.db"
 
 RAW_DIR.mkdir(parents=True, exist_ok=True)
 PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
@@ -221,7 +220,7 @@ def main():
     finally:
         conn.close()
     print(f"  database saved to {DB_PATH}")
-    print("\nDone! Now go run the queries in SQL/supply_chain_inventory/analytics_queries.sql")
+    print("\nDone! Now go run the queries in ../sql/analytics_queries.sql")
 
 
 if __name__ == "__main__":

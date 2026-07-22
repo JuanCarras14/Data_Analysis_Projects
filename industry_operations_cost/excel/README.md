@@ -24,9 +24,20 @@ Other parts: [Python](../python)
 - "Operator Break" and "Changeover" account for more lost minutes combined than "Mechanical Failure" - the biggest time losses aren't breakdowns, they're scheduling/process related.
 - Materials is by far the largest cost category (~47% of total spend), well ahead of labor (~35%).
 
+![OEE by production line](./images/oee_by_line.png)
+![Total cost by category](./images/cost_by_category.png)
+
 ## How to run
 
 Open `operations_analysis.xlsx` - all formulas recalculate automatically. To rebuild from scratch, regenerate the CSVs with the Python script and re-import them into the `Lines`/`Production Log`/`Monthly Costs` sheets.
+
+Charts above are generated separately from the workbook data:
+
+```bash
+cd industry_operations_cost/excel
+pip install openpyxl matplotlib
+python make_charts.py
+```
 
 ## Project Status
 

@@ -26,9 +26,20 @@ Other parts: [Python](../python)
 - The three customer segments are almost tied in revenue (~$2.35M each).
 - ~12.6% of orders end up Cancelled or Returned.
 
+![Monthly revenue](./images/monthly_revenue.png)
+![Top 5 customers by revenue](./images/top_customers.png)
+
 ## How to run
 
 Open `sales_analysis.xlsx` - all formulas recalculate automatically. To rebuild from scratch, regenerate the CSVs with the Python script and re-import them into the `Customers`/`Products`/`Orders` sheets.
+
+Charts above are generated separately from the workbook data:
+
+```bash
+cd sales_analytics_pipeline/excel
+pip install openpyxl matplotlib
+python make_charts.py
+```
 
 ## Project Status
 

@@ -19,11 +19,10 @@ from datetime import datetime, timedelta
 import pandas as pd
 
 THIS_PROJECT_DIR = Path(__file__).resolve().parent
-REPO_ROOT = THIS_PROJECT_DIR.parent.parent
 
 RAW_PATH = THIS_PROJECT_DIR / "data" / "raw" / "water_treatment_raw.csv"
 PROCESSED_DIR = THIS_PROJECT_DIR / "data" / "processed"
-DB_PATH = REPO_ROOT / "SQL" / "wastewater_effluent_quality" / "database" / "wastewater.db"
+DB_PATH = THIS_PROJECT_DIR.parent / "sql" / "database" / "wastewater.db"
 
 PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
 DB_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -169,7 +168,7 @@ def main():
         conn.close()
     print(f"  database saved to {DB_PATH}")
 
-    print("\nDone! Now go run the queries in SQL/wastewater_effluent_quality/analytics_queries.sql")
+    print("\nDone! Now go run the queries in ../sql/analytics_queries.sql")
 
 
 if __name__ == "__main__":

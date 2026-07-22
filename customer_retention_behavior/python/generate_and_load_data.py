@@ -24,11 +24,10 @@ SIGNUP_WINDOW_MONTHS = 18   # customers sign up spread across this many months
 DATASET_END = datetime(2024, 12, 31)  # "today" - no transactions after this
 
 THIS_PROJECT_DIR = Path(__file__).resolve().parent
-REPO_ROOT = THIS_PROJECT_DIR.parent.parent
 
 RAW_DIR = THIS_PROJECT_DIR / "data" / "raw"
 PROCESSED_DIR = THIS_PROJECT_DIR / "data" / "processed"
-DB_PATH = REPO_ROOT / "SQL" / "customer_retention_behavior" / "database" / "customer_retention.db"
+DB_PATH = THIS_PROJECT_DIR.parent / "sql" / "database" / "customer_retention.db"
 
 RAW_DIR.mkdir(parents=True, exist_ok=True)
 PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
@@ -189,7 +188,7 @@ def main():
     finally:
         conn.close()
     print(f"  database saved to {DB_PATH}")
-    print("\nDone! Now go run the queries in SQL/customer_retention_behavior/analytics_queries.sql")
+    print("\nDone! Now go run the queries in ../sql/analytics_queries.sql")
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
-# SQL Murder Mystery
+# SQL Murder Mystery (first SQL project)
 
-A SQL practice project based on the [SQL Murder Mystery exercise by Knight Lab](https://mystery.knightlab.com/), where a murder case is solved by querying a relational database using SQL only.
+My first SQL project, before any of the others in this repo. A practice exercise based on the [SQL Murder Mystery by Knight Lab](https://mystery.knightlab.com/), where a murder case is solved by querying a relational database using SQL only. Keeping it here as a record of where I started with SQL.
 
 ## The case
 

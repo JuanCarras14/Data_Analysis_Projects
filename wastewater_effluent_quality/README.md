@@ -6,9 +6,13 @@ The project I'm most proud of: data analysis on real data from an actual urban w
 
 - **[Python](./python)** - loads and cleans the raw sensor feed with pandas. Missing readings are kept as `NULL` instead of dropped or guessed, since a gap can mean a real plant problem, then the clean data is loaded into SQLite.
 - **[SQL](./sql)** - queries the database to measure compliance and removal efficiency by treatment stage: summary stats, days over the limits, compliance rate, primary vs secondary comparison, a missing-data audit, and a monthly trend.
+- **[Power BI](./powerbi)** - two-page dashboard on the same data: an overview with KPI cards and a trend line against the reference limit, and a breakdown by plant status and treatment stage.
 
 ## What I found
 
 - The plant met discharge limits on about 95% of the days (only ~5% went over at least one reference limit).
 - The biological (secondary) stage does most of the work - around 83.6% average BOD removal, vs ~37.8% in the primary settler.
 - The days tagged as "overloaded" actually had the best average removal, which I'd want to look into further.
+
+![Overview](./images/overview.png)
+![Status and Stage Breakdown](./images/status_stage_breakdown.png)

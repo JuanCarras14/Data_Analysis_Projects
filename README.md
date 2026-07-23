@@ -12,7 +12,7 @@ Organized by project. Each project has its own folder with a README, and inside 
 
 ```
 Data-Analysis-Projects/
-├── wastewater_effluent_quality/   (python + sql)
+├── wastewater_effluent_quality/   (python + sql + power bi)
 ├── sales_analytics_pipeline/      (python + excel)
 ├── customer_retention_behavior/   (python + sql)
 ├── industry_operations_cost/      (python + excel)
@@ -24,7 +24,7 @@ Data-Analysis-Projects/
 
 ## Projects
 
-**[Wastewater Effluent Quality](./wastewater_effluent_quality)** (Python + SQL) - real data from an actual wastewater treatment plant ([UCI dataset](https://archive.ics.uci.edu/dataset/106/water+treatment+plant), 165 days of sensor readings). Python cleans the raw sensor data (missing readings kept as `NULL`, not dropped or guessed), SQL measures compliance and removal efficiency. The plant met discharge limits on about 95% of the days, and the biological stage does most of the work (83.6% BOD removal vs 37.8% in the primary settler). This is the project that ties my chemical-engineering background to data work.
+**[Wastewater Effluent Quality](./wastewater_effluent_quality)** (Python + SQL + Power BI) - real data from an actual wastewater treatment plant ([UCI dataset](https://archive.ics.uci.edu/dataset/106/water+treatment+plant), 165 days of sensor readings). Python cleans the raw sensor data (missing readings kept as `NULL`, not dropped or guessed), SQL measures compliance and removal efficiency, and a Power BI dashboard puts both into KPI cards and charts. The plant met discharge limits on about 95% of the days, and the biological stage does most of the work (83.6% BOD removal vs 37.8% in the primary settler). This is the project that ties my chemical-engineering background to data work.
 
 - **[Data Jobs Dashboard](./data_jobs_dashboard)** (Power BI) - a dashboard on the 2024 data job market (salaries, distribution, remote work, top skills), in two versions that show how my data modeling and DAX improved between them. Includes screenshots.
 - **[Sales & Customer Analytics Pipeline](./sales_analytics_pipeline)** (Python + Excel) - Python generates and cleans a synthetic sales dataset, Excel analyzes it with formulas (SUMIFS/VLOOKUP/LARGE).

@@ -353,6 +353,156 @@ def supply_suppliers():
     save(fig, ROOT / "supply_chain_inventory" / "images" / "suppliers.png")
 
 
+def sales():
+    base = ROOT / "sales_analytics_pipeline" / "python" / "data" / "processed"
+    customers = pd.read_csv(base / "customers_clean.csv", parse_dates=["signup_date"])
+    products = pd.read_csv(base / "products_clean.csv")
+    orders = pd.read_csv(base / "orders_clean.csv", parse_dates=["order_date"])
+    orders = orders.merge(customers[["customer_id", "customer_name", "segment"]], on="customer_id", how="left")
+    orders = orders.merge(products[["product_id", "product_name", "category", "unit_cost"]], on="product_id", how="left")
+    orders["year_month"] = orders["order_date"].dt.strftime("%Y-%m")
+    orders["year"] = orders["order_date"].dt.year
+    orders["cost"] = orders["quantity"] * orders["unit_cost"]
+    completed = orders[orders["order_status"] == "Completed"].copy()
+    return customers, products, orders, completed
+
+
+def sales_overview():
+    _, _, orders, completed = sales()
+    revenue = completed["net_revenue"].sum()
+    cost = completed["cost"].sum()
+    profit = revenue - cost
+    margin = profit / revenue
+    aov = revenue / completed["order_id"].nunique()
+    monthly = completed.groupby("year_month", as_index=False)["net_revenue"].sum()
+    by_year = completed.groupby("year")["net_revenue"].sum()
+    by_category = completed.groupby("category", as_index=False)["net_revenue"].sum().sort_values("net_revenue", ascending=False)
+    by_segment = completed.groupby("segment", as_index=False)["net_revenue"].sum().sort_values("net_revenue", ascending=False)
+    fig = figure()
+    add_header(fig, "Sales Overview", "All Years")
+    add_finding(fig, f"Revenue flat year over year: ${by_year.loc[2023] / 1_000_000:.2f}M (2023) -> ${by_year.loc[2024] / 1_000_000:.2f}M (2024).")
+    add_card(fig, 1, f"${revenue / 1_000_000:.2f}M", "Total Revenue")
+    add_card(fig, 2, f"${profit / 1_000_000:.2f}M", "Total Profit")
+    add_card(fig, 3, f"{margin:.1%}", "Profit Margin")
+    add_card(fig, 4, f"${aov:,.0f}", "Avg Order Value")
+    ax = fig.add_axes(rect(24, 224, 1232, 232))
+    style(ax, "Revenue by Month")
+    ax.plot(monthly["year_month"], monthly["net_revenue"] / 1000, color=ACCENT, linewidth=2.5)
+    ax.tick_params(axis="x", labelbottom=False)
+    ax.set_ylabel("$K", color=MUTED)
+    ax1 = fig.add_axes(rect(24, 472, 608, 224))
+    style(ax1, "Revenue by Category")
+    colors = [ACCENT] + [GREY] * (len(by_category) - 1)
+    ax1.bar(by_category["category"], by_category["net_revenue"] / 1_000_000, color=colors)
+    ax1.tick_params(axis="x", rotation=12)
+    ax1.set_ylabel("$M", color=MUTED)
+    ax2 = fig.add_axes(rect(648, 472, 608, 224))
+    style(ax2, "Revenue by Segment")
+    ax2.bar(by_segment["segment"], by_segment["net_revenue"] / 1_000_000, color=[ACCENT] + [GREY] * (len(by_segment) - 1))
+    ax2.set_ylabel("$M", color=MUTED)
+    save(fig, ROOT / "sales_analytics_pipeline" / "images" / "overview.png")
+
+
+def sales_customers_products():
+    _, _, _, completed = sales()
+    top_customers = completed.groupby(["customer_name", "segment"], as_index=False).agg(
+        total_revenue=("net_revenue", "sum"),
+        completed_orders=("order_id", "nunique"),
+    )
+    top_customers["aov"] = top_customers["total_revenue"] / top_customers["completed_orders"]
+    top_customers = top_customers.sort_values("total_revenue", ascending=False).head(10)
+    category = completed.groupby("category", as_index=False).agg(total_revenue=("net_revenue", "sum"), total_cost=("cost", "sum"))
+    category["total_profit"] = category["total_revenue"] - category["total_cost"]
+    category = category.sort_values("total_revenue", ascending=False)
+    products = completed.groupby(["product_name", "category"], as_index=False).agg(
+        completed_orders=("order_id", "nunique"),
+        total_revenue=("net_revenue", "sum"),
+        total_cost=("cost", "sum"),
+    )
+    products["total_profit"] = products["total_revenue"] - products["total_cost"]
+    products["margin"] = products["total_profit"] / products["total_revenue"]
+    products = products.sort_values("total_revenue", ascending=False).head(8)
+    fig = figure()
+    add_header(fig, "Customers & Products", "All Categories")
+    add_finding(fig, "Software leads revenue, but the category view checks whether that lead still holds after product cost.")
+    ax1 = fig.add_axes(rect(24, 112, 608, 344))
+    ax1.axis("off")
+    display = top_customers.copy()
+    display["total_revenue"] = display["total_revenue"].map(lambda v: f"${v:,.0f}")
+    display["aov"] = display["aov"].map(lambda v: f"${v:,.0f}")
+    tbl = ax1.table(cellText=display[["customer_name", "segment", "total_revenue", "aov"]].values, colLabels=["Customer", "Segment", "Revenue", "AOV"], cellLoc="center", loc="center")
+    tbl.auto_set_font_size(False)
+    tbl.set_fontsize(8)
+    tbl.scale(1, 1.35)
+    for (row, _), cell in tbl.get_celld().items():
+        cell.set_edgecolor(LIGHT_GREY)
+        cell.set_facecolor(BG if row == 0 else WHITE)
+        if row == 0:
+            cell.set_text_props(weight="bold", color=INK)
+    ax1.set_title("Top 10 Customers", loc="left", fontsize=12, fontweight="bold", color=INK, pad=8)
+    ax2 = fig.add_axes(rect(648, 112, 608, 344))
+    style(ax2, "Revenue vs Profit by Category")
+    x = np.arange(len(category))
+    ax2.bar(x - 0.18, category["total_revenue"] / 1_000_000, width=0.36, color=ACCENT, label="Revenue")
+    ax2.bar(x + 0.18, category["total_profit"] / 1_000_000, width=0.36, color=GREY, label="Profit")
+    ax2.set_xticks(x, category["category"], rotation=12)
+    ax2.set_ylabel("$M", color=MUTED)
+    ax2.legend(frameon=False, fontsize=8)
+    ax3 = fig.add_axes(rect(24, 472, 1232, 224))
+    ax3.axis("off")
+    prod = products.copy()
+    prod["total_revenue"] = prod["total_revenue"].map(lambda v: f"${v:,.0f}")
+    prod["total_profit"] = prod["total_profit"].map(lambda v: f"${v:,.0f}")
+    prod["margin"] = prod["margin"].map(lambda v: f"{v:.1%}")
+    tbl2 = ax3.table(cellText=prod[["product_name", "category", "completed_orders", "total_revenue", "total_profit", "margin"]].values, colLabels=["Product", "Category", "Orders", "Revenue", "Profit", "Margin"], cellLoc="center", loc="center")
+    tbl2.auto_set_font_size(False)
+    tbl2.set_fontsize(8)
+    tbl2.scale(1, 1.12)
+    for (row, _), cell in tbl2.get_celld().items():
+        cell.set_edgecolor(LIGHT_GREY)
+        cell.set_facecolor(BG if row == 0 else WHITE)
+        if row == 0:
+            cell.set_text_props(weight="bold", color=INK)
+    save(fig, ROOT / "sales_analytics_pipeline" / "images" / "customers_products.png")
+
+
+def sales_order_quality():
+    _, _, orders, completed = sales()
+    total_orders = orders["order_id"].nunique()
+    completed_orders = completed["order_id"].nunique()
+    lost = (total_orders - completed_orders) / total_orders
+    status = orders.groupby("order_status", as_index=False)["order_id"].nunique().sort_values("order_id", ascending=False)
+    monthly = orders.groupby("year_month", as_index=False).agg(total=("order_id", "nunique"))
+    monthly_completed = completed.groupby("year_month", as_index=False).agg(completed=("order_id", "nunique"))
+    monthly = monthly.merge(monthly_completed, on="year_month", how="left").fillna(0)
+    monthly["lost_rate"] = (monthly["total"] - monthly["completed"]) / monthly["total"]
+    category = orders.groupby("category", as_index=False).agg(total=("order_id", "nunique"))
+    cat_completed = completed.groupby("category", as_index=False).agg(completed=("order_id", "nunique"))
+    category = category.merge(cat_completed, on="category", how="left").fillna(0)
+    category["lost_rate"] = (category["total"] - category["completed"]) / category["total"]
+    category = category.sort_values("lost_rate", ascending=False)
+    fig = figure()
+    add_header(fig, "Order Quality", "All Years")
+    add_finding(fig, f"{lost:.1%} of orders are cancelled or returned, so those rows are analyzed instead of silently dropped.")
+    add_card(fig, 1, f"{total_orders:,}", "Total Orders")
+    add_card(fig, 2, f"{completed_orders:,}", "Completed Orders")
+    add_card(fig, 3, f"{lost:.1%}", "Lost Order %", status="bad")
+    ax1 = fig.add_axes(rect(24, 224, 608, 232))
+    ax1.set_facecolor(WHITE)
+    ax1.pie(status["order_id"], labels=status["order_status"], colors=[ACCENT, GREY, "#D5DBE3"], autopct="%1.1f%%", startangle=90, textprops={"fontsize": 9, "color": TEXT})
+    ax1.set_title("Orders by Status", loc="left", fontsize=12, fontweight="bold", color=INK)
+    ax2 = fig.add_axes(rect(648, 224, 608, 232))
+    style(ax2, "Lost Order % by Month")
+    ax2.plot(monthly["year_month"], monthly["lost_rate"] * 100, color=ACCENT, linewidth=2.5)
+    ax2.tick_params(axis="x", labelbottom=False)
+    ax2.set_ylabel("Lost %", color=MUTED)
+    ax3 = fig.add_axes(rect(24, 472, 1232, 224))
+    style(ax3, "Lost Order % by Category")
+    ax3.bar(category["category"], category["lost_rate"] * 100, color=[ACCENT] + [GREY] * (len(category) - 1))
+    ax3.set_ylabel("Lost %", color=MUTED)
+    save(fig, ROOT / "sales_analytics_pipeline" / "images" / "order_quality.png")
+
+
 if __name__ == "__main__":
     industry_overview()
     industry_oee_breakdown()
@@ -360,3 +510,6 @@ if __name__ == "__main__":
     supply_overview()
     supply_stockouts()
     supply_suppliers()
+    sales_overview()
+    sales_customers_products()
+    sales_order_quality()

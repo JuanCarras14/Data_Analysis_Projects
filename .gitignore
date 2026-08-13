@@ -23,6 +23,9 @@ env/
 # Logs
 *.log
 
+# Local PBIX inspection output
+.tmp_pbix_*/
+
 # Synthetic-data projects: raw/processed CSVs are reproducible by rerunning
 # each project's python/generate_and_load_data.py. Where the project also uses SQL
 # (customer_retention_behavior, supply_chain_inventory) the .db IS committed

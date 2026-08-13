@@ -112,9 +112,16 @@ def build_table_tmdl(
     source_path: pathlib.Path,
     measures: list[tuple[str, str, str | None]] | None = None,
 ) -> str:
-    lines = [f"table {name}", "\tlineageTag: " + os.urandom(16).hex(), "", "\tpartition " + name + " = m"]
+    lines = [
+        f"table {name}",
+        "\tlineageTag: " + os.urandom(16).hex(),
+        "",
+        "\tpartition " + name + " = m",
+        "\t\tmode: import",
+        "\t\tsource =",
+    ]
     for expression_line in m_csv(source_path).splitlines():
-        lines.append("\t\t" + expression_line)
+        lines.append("\t\t\t\t" + expression_line)
     lines.append("")
     for column_name, data_type in columns:
         lines.extend(

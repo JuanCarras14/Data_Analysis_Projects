@@ -1,12 +1,14 @@
 table suppliers
-	lineageTag: b2099ee5f51a7423f7c0e4f2d3ab5ec5
+	lineageTag: 28279bed987024ffdd22cfee0aa68bee
 
 	partition suppliers = m
-		let
-		    Source = Csv.Document(File.Contents("C:/Users/juanj/OneDrive/Documents/Data Analysis Projects/supply_chain_inventory/python/data/processed/suppliers_clean.csv"),[Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
-		    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
-		in
-		    PromotedHeaders
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:/Users/juanj/OneDrive/Documents/Data Analysis Projects/supply_chain_inventory/python/data/processed/suppliers_clean.csv"),[Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+				in
+				    PromotedHeaders
 
 	column supplier_id
 		dataType: int64

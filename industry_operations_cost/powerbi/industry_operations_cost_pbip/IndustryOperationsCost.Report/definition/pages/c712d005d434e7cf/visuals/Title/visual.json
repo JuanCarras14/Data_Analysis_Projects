@@ -1,6 +1,6 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
-  "name": "51af9e3c6e0a4247",
+  "name": "9ed19fd422cbaac5",
   "position": {
     "x": 20,
     "y": 20,
@@ -18,7 +18,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Stockouts",
+                    "value": "OEE Breakdown",
                     "textStyle": {
                       "fontSize": "24pt"
                     }

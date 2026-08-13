@@ -1,12 +1,14 @@
 table products
-	lineageTag: 676a1941148485f0b28b99eea2a4d05c
+	lineageTag: a3cb7d7147158b9a5f648e5e91a333f6
 
 	partition products = m
-		let
-		    Source = Csv.Document(File.Contents("C:/Users/juanj/OneDrive/Documents/Data Analysis Projects/supply_chain_inventory/python/data/processed/products_clean.csv"),[Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
-		    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
-		in
-		    PromotedHeaders
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:/Users/juanj/OneDrive/Documents/Data Analysis Projects/supply_chain_inventory/python/data/processed/products_clean.csv"),[Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+				in
+				    PromotedHeaders
 
 	column product_id
 		dataType: int64

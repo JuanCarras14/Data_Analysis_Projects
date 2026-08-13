@@ -1,5 +1,5 @@
 table production_log
-	lineageTag: 0e55baad2c69770d1ee830f99aa87b28
+	lineageTag: 3de53a094778c328f7e3fdbfa70db1d0
 
 	partition production_log = m
 		let
@@ -54,6 +54,9 @@ table production_log
 	measure 'Total Defects' = SUM(production_log[units_defective])
 		formatString: #,0
 
+	measure 'Good Units' = [Total Units] - [Total Defects]
+		formatString: #,0
+
 	measure 'Planned Minutes' = SUM(production_log[planned_minutes])
 		formatString: #,0
 
@@ -63,10 +66,16 @@ table production_log
 	measure 'Runtime Minutes' = [Planned Minutes] - [Downtime Minutes]
 		formatString: #,0
 
+	measure 'Downtime Rate %' = DIVIDE([Downtime Minutes], [Planned Minutes])
+		formatString: 0.0%
+
 	measure 'Availability %' = DIVIDE([Runtime Minutes], [Planned Minutes])
 		formatString: 0.0%
 
 	measure 'Quality %' = DIVIDE([Total Units] - [Total Defects], [Total Units])
+		formatString: 0.0%
+
+	measure 'Defect Rate %' = DIVIDE([Total Defects], [Total Units])
 		formatString: 0.0%
 
 	measure 'Theoretical Units' = SUMX(production_log, DIVIDE(production_log[planned_minutes] - production_log[downtime_minutes], 60) * RELATED(lines[target_units_per_hour]))
@@ -85,3 +94,19 @@ table production_log
 		formatString: 0.0%
 
 	measure 'OEE Gap Label' = FORMAT([OEE Gap], "+0.0%;-0.0%") & " vs 85% target"
+
+	measure 'Lines Below OEE Target' = COUNTROWS(FILTER(VALUES(lines[line_name]), [OEE %] < [OEE Target]))
+		formatString: #,0
+
+	measure 'Worst OEE Line' = CONCATENATEX(TOPN(1, VALUES(lines[line_name]), [OEE %], ASC), lines[line_name], ", ")
+
+	measure 'Top Downtime Reason' = CONCATENATEX(TOPN(1, VALUES(production_log[downtime_reason]), [Downtime Minutes], DESC), production_log[downtime_reason], ", ")
+
+	measure 'Line 3 Availability' = CALCULATE([Availability %], lines[line_name] = "Line 3")
+		formatString: 0.0%
+
+	measure 'Line 3 Performance' = CALCULATE([Performance %], lines[line_name] = "Line 3")
+		formatString: 0.0%
+
+	measure 'Line 3 Quality' = CALCULATE([Quality %], lines[line_name] = "Line 3")
+		formatString: 0.0%

@@ -1,5 +1,5 @@
 table products
-	lineageTag: f1e73bbd713bb6bd081029b5fc5034c9
+	lineageTag: 676a1941148485f0b28b99eea2a4d05c
 
 	partition products = m
 		let

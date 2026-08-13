@@ -11,6 +11,7 @@ import json
 import os
 import pathlib
 import shutil
+import stat
 import subprocess
 import tempfile
 import time
@@ -237,7 +238,11 @@ def add_pages_and_visuals(project_dir: pathlib.Path, report_name: str, pages: li
 
 def merge_thick(project_dir: pathlib.Path, report_name: str, model_name: str, destination: pathlib.Path) -> None:
     if destination.exists():
-        shutil.rmtree(destination)
+        def reset_permissions(function, path, _exc_info):
+            os.chmod(path, stat.S_IWRITE)
+            function(path)
+
+        shutil.rmtree(destination, onexc=reset_permissions)
     run(["report", "merge-to-thick", f"{report_name}.Report", f"{model_name}.SemanticModel", "-o", str(destination)], project_dir)
 
 
@@ -269,11 +274,14 @@ def build_industry() -> None:
             [
                 ("Total Units", "SUM(production_log[units_produced])", "#,0"),
                 ("Total Defects", "SUM(production_log[units_defective])", "#,0"),
+                ("Good Units", "[Total Units] - [Total Defects]", "#,0"),
                 ("Planned Minutes", "SUM(production_log[planned_minutes])", "#,0"),
                 ("Downtime Minutes", "SUM(production_log[downtime_minutes])", "#,0"),
                 ("Runtime Minutes", "[Planned Minutes] - [Downtime Minutes]", "#,0"),
+                ("Downtime Rate %", "DIVIDE([Downtime Minutes], [Planned Minutes])", "0.0%"),
                 ("Availability %", "DIVIDE([Runtime Minutes], [Planned Minutes])", "0.0%"),
                 ("Quality %", "DIVIDE([Total Units] - [Total Defects], [Total Units])", "0.0%"),
+                ("Defect Rate %", "DIVIDE([Total Defects], [Total Units])", "0.0%"),
                 (
                     "Theoretical Units",
                     "SUMX(production_log, DIVIDE(production_log[planned_minutes] - production_log[downtime_minutes], 60) * RELATED(lines[target_units_per_hour]))",
@@ -284,13 +292,27 @@ def build_industry() -> None:
                 ("OEE Target", "0.85", "0.0%"),
                 ("OEE Gap", "[OEE %] - [OEE Target]", "0.0%"),
                 ("OEE Gap Label", 'FORMAT([OEE Gap], "+0.0%;-0.0%") & " vs 85% target"', None),
+                ("Lines Below OEE Target", "COUNTROWS(FILTER(VALUES(lines[line_name]), [OEE %] < [OEE Target]))", "#,0"),
+                ("Worst OEE Line", "CONCATENATEX(TOPN(1, VALUES(lines[line_name]), [OEE %], ASC), lines[line_name], \", \")", None),
+                ("Top Downtime Reason", "CONCATENATEX(TOPN(1, VALUES(production_log[downtime_reason]), [Downtime Minutes], DESC), production_log[downtime_reason], \", \")", None),
+                ("Line 3 Availability", "CALCULATE([Availability %], lines[line_name] = \"Line 3\")", "0.0%"),
+                ("Line 3 Performance", "CALCULATE([Performance %], lines[line_name] = \"Line 3\")", "0.0%"),
+                ("Line 3 Quality", "CALCULATE([Quality %], lines[line_name] = \"Line 3\")", "0.0%"),
             ],
         ),
         "monthly_costs": build_table_tmdl(
             "monthly_costs",
             [("cost_id", "int64"), ("line_id", "int64"), ("cost_month", "string"), ("cost_type", "string"), ("amount", "decimal")],
             data / "monthly_costs_clean.csv",
-            [("Total Cost", "SUM(monthly_costs[amount])", "$#,0"), ("Cost per Unit", "DIVIDE([Total Cost], [Total Units])", "$0.00")],
+            [
+                ("Total Cost", "SUM(monthly_costs[amount])", "$#,0"),
+                ("Cost per Unit", "DIVIDE([Total Cost], [Total Units])", "$0.00"),
+                ("Materials Cost", "CALCULATE([Total Cost], monthly_costs[cost_type] = \"Materials\")", "$#,0"),
+                ("Materials Share %", "DIVIDE([Materials Cost], [Total Cost])", "0.0%"),
+                ("Maintenance Cost", "CALCULATE([Total Cost], monthly_costs[cost_type] = \"Maintenance\")", "$#,0"),
+                ("Maintenance Share %", "DIVIDE([Maintenance Cost], [Total Cost])", "0.0%"),
+                ("Highest Cost Type", "CONCATENATEX(TOPN(1, VALUES(monthly_costs[cost_type]), [Total Cost], DESC), monthly_costs[cost_type], \", \")", None),
+            ],
         ),
     }
     relationships = [
@@ -304,19 +326,24 @@ def build_industry() -> None:
         Visual("card", "Overview", "oee_card", "OEE %", 24, 88, 296, 120, ("Values:production_log.OEE %",)),
         Visual("card", "Overview", "availability_card", "Availability %", 336, 88, 296, 120, ("Values:production_log.Availability %",)),
         Visual("card", "Overview", "performance_card", "Performance %", 648, 88, 296, 120, ("Values:production_log.Performance %",)),
-        Visual("card", "Overview", "quality_card", "Quality %", 960, 88, 296, 120, ("Values:production_log.Quality %",)),
+        Visual("card", "Overview", "below_target_card", "Lines Below Target", 960, 88, 296, 120, ("Values:production_log.Lines Below OEE Target",)),
         Visual("lineChart", "Overview", "downtime_trend", "Downtime by Date", 24, 224, 600, 232, ("Category:production_log.production_date", "Y:production_log.Downtime Minutes")),
         Visual("barChart", "Overview", "oee_by_line", "OEE by Line", 648, 224, 296, 232, ("Category:lines.line_name", "Y:production_log.OEE %")),
         Visual("columnChart", "Overview", "units_by_line", "Units by Line", 960, 224, 296, 232, ("Category:lines.line_name", "Y:production_log.Total Units")),
-        Visual("tableEx", "Overview", "overview_detail", "Operating Detail", 24, 472, 1232, 200, ("Values:lines.line_name", "Values:production_log.OEE %", "Values:production_log.Downtime Minutes", "Values:production_log.Total Units")),
+        Visual("tableEx", "Overview", "overview_detail", "Operating Detail", 24, 472, 1232, 200, ("Values:lines.line_name", "Values:production_log.OEE %", "Values:production_log.OEE Gap", "Values:production_log.Downtime Rate %", "Values:production_log.Defect Rate %", "Values:production_log.Total Units")),
         Visual("slicer", "OEE Breakdown", "line_slicer_oee", "Line", 1016, 24, 240, 48, ("Values:lines.line_name",)),
-        Visual("tableEx", "OEE Breakdown", "oee_table", "OEE Component Table", 24, 88, 600, 368, ("Values:lines.line_name", "Values:lines.area", "Values:production_log.Availability %", "Values:production_log.Performance %", "Values:production_log.Quality %", "Values:production_log.OEE %")),
-        Visual("barChart", "OEE Breakdown", "downtime_reason", "Downtime by Reason", 648, 88, 608, 272, ("Category:production_log.downtime_reason", "Y:production_log.Downtime Minutes")),
+        Visual("card", "OEE Breakdown", "worst_line", "Worst OEE Line", 24, 88, 296, 120, ("Values:production_log.Worst OEE Line",)),
+        Visual("card", "OEE Breakdown", "line3_availability", "Line 3 Availability", 336, 88, 296, 120, ("Values:production_log.Line 3 Availability",)),
+        Visual("card", "OEE Breakdown", "line3_performance", "Line 3 Performance", 648, 88, 296, 120, ("Values:production_log.Line 3 Performance",)),
+        Visual("card", "OEE Breakdown", "top_downtime_reason", "Top Downtime Reason", 960, 88, 296, 120, ("Values:production_log.Top Downtime Reason",)),
+        Visual("tableEx", "OEE Breakdown", "oee_table", "OEE Component Table", 24, 224, 600, 232, ("Values:lines.line_name", "Values:lines.area", "Values:production_log.Availability %", "Values:production_log.Performance %", "Values:production_log.Quality %", "Values:production_log.OEE %", "Values:production_log.OEE Gap")),
+        Visual("barChart", "OEE Breakdown", "downtime_reason", "Downtime by Reason", 648, 224, 608, 232, ("Category:production_log.downtime_reason", "Y:production_log.Downtime Minutes")),
         Visual("barChart", "OEE Breakdown", "downtime_reason_line", "Downtime Reason by Line", 24, 472, 1232, 200, ("Category:production_log.downtime_reason", "Y:production_log.Downtime Minutes", "Series:lines.line_name")),
         Visual("slicer", "Cost Analysis", "line_slicer_cost", "Line", 1016, 24, 240, 48, ("Values:lines.line_name",)),
         Visual("card", "Cost Analysis", "total_cost", "Total Cost", 24, 88, 296, 120, ("Values:monthly_costs.Total Cost",)),
         Visual("card", "Cost Analysis", "cost_unit", "Cost per Unit", 336, 88, 296, 120, ("Values:monthly_costs.Cost per Unit",)),
-        Visual("card", "Cost Analysis", "cost_units", "Total Units", 648, 88, 296, 120, ("Values:production_log.Total Units",)),
+        Visual("card", "Cost Analysis", "materials_share", "Materials Share %", 648, 88, 296, 120, ("Values:monthly_costs.Materials Share %",)),
+        Visual("card", "Cost Analysis", "highest_cost_type", "Highest Cost Type", 960, 88, 296, 120, ("Values:monthly_costs.Highest Cost Type",)),
         Visual("barChart", "Cost Analysis", "cost_type", "Cost by Type", 24, 224, 600, 232, ("Category:monthly_costs.cost_type", "Y:monthly_costs.Total Cost")),
         Visual("columnChart", "Cost Analysis", "cost_month", "Monthly Cost by Type", 648, 224, 608, 232, ("Category:monthly_costs.cost_month", "Y:monthly_costs.Total Cost", "Series:monthly_costs.cost_type")),
         Visual("lineChart", "Cost Analysis", "cost_per_unit_month", "Cost per Unit by Month", 24, 472, 1232, 200, ("Category:monthly_costs.cost_month", "Y:monthly_costs.Cost per Unit")),
@@ -349,8 +376,15 @@ def build_supply() -> None:
             [
                 ("Total Stock On Hand", "SUM(inventory_snapshots[stock_on_hand])", "#,0"),
                 ("Inventory Value", "SUMX(inventory_snapshots, inventory_snapshots[stock_on_hand] * RELATED(products[unit_cost]))", "$#,0"),
+                ("Latest Snapshot Date", "MAX(inventory_snapshots[snapshot_date])", "Short Date"),
+                ("Latest Stock On Hand", "VAR LatestDate = [Latest Snapshot Date] RETURN CALCULATE([Total Stock On Hand], inventory_snapshots[snapshot_date] = LatestDate)", "#,0"),
+                ("Latest Inventory Value", "VAR LatestDate = [Latest Snapshot Date] RETURN CALCULATE([Inventory Value], inventory_snapshots[snapshot_date] = LatestDate)", "$#,0"),
                 ("Stockout Weeks", "SUM(inventory_snapshots[stockout])", "#,0"),
                 ("Stockout Rate %", "DIVIDE([Stockout Weeks], COUNTROWS(inventory_snapshots))", "0.0%"),
+                ("Products Stocked Out", "COUNTROWS(FILTER(VALUES(products[product_name]), CALCULATE(MAX(inventory_snapshots[stockout])) = 1))", "#,0"),
+                ("Worst Product", "CONCATENATEX(TOPN(1, VALUES(products[product_name]), [Stockout Rate %], DESC), products[product_name], \", \")", None),
+                ("Worst Product Stockout Rate %", "MAXX(TOPN(1, VALUES(products[product_name]), [Stockout Rate %], DESC), [Stockout Rate %])", "0.0%"),
+                ("Average Product Stockout Rate %", "AVERAGEX(VALUES(products[product_name]), [Stockout Rate %])", "0.0%"),
             ],
         ),
         "purchase_orders": build_table_tmdl(
@@ -361,6 +395,10 @@ def build_supply() -> None:
                 ("Total Orders", "COUNTROWS(purchase_orders)", "#,0"),
                 ("On-Time Orders", "CALCULATE(COUNTROWS(purchase_orders), purchase_orders[actual_delivery_date] <= purchase_orders[expected_delivery_date])", "#,0"),
                 ("On-Time %", "DIVIDE([On-Time Orders], [Total Orders])", "0.0%"),
+                ("Late Orders", "[Total Orders] - [On-Time Orders]", "#,0"),
+                ("Supplier Count", "DISTINCTCOUNT(suppliers[supplier_id])", "#,0"),
+                ("Lowest On-Time Supplier", "CONCATENATEX(TOPN(1, VALUES(suppliers[supplier_name]), [On-Time %], ASC), suppliers[supplier_name], \", \")", None),
+                ("Lowest Supplier On-Time %", "MINX(VALUES(suppliers[supplier_name]), [On-Time %])", "0.0%"),
             ],
         ),
     }
@@ -373,23 +411,28 @@ def build_supply() -> None:
     create_report_shell(work, "SupplyChainInventory", "SupplyChainInventory")
     visuals = [
         Visual("slicer", "Inventory Overview", "region_slicer", "Region", 1016, 24, 240, 48, ("Values:suppliers.region",)),
-        Visual("card", "Inventory Overview", "inventory_value", "Inventory Value", 24, 88, 296, 120, ("Values:inventory_snapshots.Inventory Value",)),
+        Visual("card", "Inventory Overview", "inventory_value", "Latest Inventory Value", 24, 88, 296, 120, ("Values:inventory_snapshots.Latest Inventory Value",)),
         Visual("card", "Inventory Overview", "stockout_rate", "Stockout Rate %", 336, 88, 296, 120, ("Values:inventory_snapshots.Stockout Rate %",)),
         Visual("card", "Inventory Overview", "on_time", "On-Time %", 648, 88, 296, 120, ("Values:purchase_orders.On-Time %",)),
+        Visual("card", "Inventory Overview", "products_stocked_out", "Products Stocked Out", 960, 88, 296, 120, ("Values:inventory_snapshots.Products Stocked Out",)),
         Visual("lineChart", "Inventory Overview", "stockout_trend", "Stockout Rate by Week", 24, 224, 600, 232, ("Category:inventory_snapshots.snapshot_date", "Y:inventory_snapshots.Stockout Rate %")),
-        Visual("barChart", "Inventory Overview", "value_category", "Inventory Value by Category", 648, 224, 296, 232, ("Category:products.category", "Y:inventory_snapshots.Inventory Value")),
+        Visual("barChart", "Inventory Overview", "value_category", "Latest Inventory Value by Category", 648, 224, 296, 232, ("Category:products.category", "Y:inventory_snapshots.Latest Inventory Value")),
         Visual("columnChart", "Inventory Overview", "orders_region", "Orders by Region", 960, 224, 296, 232, ("Category:suppliers.region", "Y:purchase_orders.Total Orders")),
-        Visual("tableEx", "Inventory Overview", "inventory_detail", "Inventory Detail", 24, 472, 1232, 200, ("Values:products.category", "Values:inventory_snapshots.Inventory Value", "Values:inventory_snapshots.Stockout Rate %", "Values:purchase_orders.On-Time %")),
+        Visual("tableEx", "Inventory Overview", "inventory_detail", "Inventory Detail", 24, 472, 1232, 200, ("Values:products.category", "Values:inventory_snapshots.Latest Inventory Value", "Values:inventory_snapshots.Products Stocked Out", "Values:inventory_snapshots.Stockout Rate %", "Values:purchase_orders.On-Time %")),
         Visual("slicer", "Stockouts", "category_slicer", "Category", 1016, 24, 240, 48, ("Values:products.category",)),
-        Visual("card", "Stockouts", "stockout_weeks", "Stockout Weeks", 24, 88, 296, 120, ("Values:inventory_snapshots.Stockout Weeks",)),
-        Visual("card", "Stockouts", "stockout_rate_card", "Stockout Rate %", 336, 88, 296, 120, ("Values:inventory_snapshots.Stockout Rate %",)),
+        Visual("card", "Stockouts", "worst_product", "Worst Product", 24, 88, 296, 120, ("Values:inventory_snapshots.Worst Product",)),
+        Visual("card", "Stockouts", "worst_product_rate", "Worst Product Rate", 336, 88, 296, 120, ("Values:inventory_snapshots.Worst Product Stockout Rate %",)),
+        Visual("card", "Stockouts", "avg_product_rate", "Avg Product Rate", 648, 88, 296, 120, ("Values:inventory_snapshots.Average Product Stockout Rate %",)),
+        Visual("card", "Stockouts", "stockout_weeks", "Stockout Weeks", 960, 88, 296, 120, ("Values:inventory_snapshots.Stockout Weeks",)),
         Visual("barChart", "Stockouts", "product_stockout", "Products by Stockout Rate", 24, 224, 1232, 232, ("Category:products.product_name", "Y:inventory_snapshots.Stockout Rate %")),
-        Visual("tableEx", "Stockouts", "stockout_table", "Stockout Detail", 24, 472, 1232, 200, ("Values:products.product_id", "Values:products.product_name", "Values:products.category", "Values:inventory_snapshots.Stockout Rate %")),
+        Visual("tableEx", "Stockouts", "stockout_table", "Stockout Detail", 24, 472, 1232, 200, ("Values:products.product_id", "Values:products.product_name", "Values:products.category", "Values:inventory_snapshots.Stockout Weeks", "Values:inventory_snapshots.Stockout Rate %", "Values:inventory_snapshots.Latest Stock On Hand")),
         Visual("slicer", "Suppliers", "supplier_region", "Region", 1016, 24, 240, 48, ("Values:suppliers.region",)),
-        Visual("card", "Suppliers", "supplier_orders", "Total Orders", 24, 88, 296, 120, ("Values:purchase_orders.Total Orders",)),
+        Visual("card", "Suppliers", "supplier_count", "Supplier Count", 24, 88, 296, 120, ("Values:purchase_orders.Supplier Count",)),
         Visual("card", "Suppliers", "supplier_on_time", "On-Time %", 336, 88, 296, 120, ("Values:purchase_orders.On-Time %",)),
+        Visual("card", "Suppliers", "lowest_supplier", "Lowest On-Time Supplier", 648, 88, 296, 120, ("Values:purchase_orders.Lowest On-Time Supplier",)),
+        Visual("card", "Suppliers", "late_orders", "Late Orders", 960, 88, 296, 120, ("Values:purchase_orders.Late Orders",)),
         Visual("barChart", "Suppliers", "supplier_performance", "On-Time % by Supplier", 24, 224, 1232, 232, ("Category:suppliers.supplier_name", "Y:purchase_orders.On-Time %")),
-        Visual("tableEx", "Suppliers", "supplier_detail", "Supplier Detail", 24, 472, 1232, 200, ("Values:suppliers.supplier_name", "Values:suppliers.region", "Values:purchase_orders.Total Orders", "Values:purchase_orders.On-Time %")),
+        Visual("tableEx", "Suppliers", "supplier_detail", "Supplier Detail", 24, 472, 1232, 200, ("Values:suppliers.supplier_name", "Values:suppliers.region", "Values:purchase_orders.Total Orders", "Values:purchase_orders.Late Orders", "Values:purchase_orders.On-Time %")),
     ]
     add_pages_and_visuals(work, "SupplyChainInventory", ["Inventory Overview", "Stockouts", "Suppliers"], visuals)
     merge_thick(work, "SupplyChainInventory", "SupplyChainInventory", out)

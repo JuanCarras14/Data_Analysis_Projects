@@ -1,5 +1,5 @@
 table purchase_orders
-	lineageTag: 7eeab15ca2a68ab8d5ebe36e1bbae8a9
+	lineageTag: 788580e06e6ae22527b426a0b46a7573
 
 	partition purchase_orders = m
 		let
@@ -50,4 +50,15 @@ table purchase_orders
 		formatString: #,0
 
 	measure 'On-Time %' = DIVIDE([On-Time Orders], [Total Orders])
+		formatString: 0.0%
+
+	measure 'Late Orders' = [Total Orders] - [On-Time Orders]
+		formatString: #,0
+
+	measure 'Supplier Count' = DISTINCTCOUNT(suppliers[supplier_id])
+		formatString: #,0
+
+	measure 'Lowest On-Time Supplier' = CONCATENATEX(TOPN(1, VALUES(suppliers[supplier_name]), [On-Time %], ASC), suppliers[supplier_name], ", ")
+
+	measure 'Lowest Supplier On-Time %' = MINX(VALUES(suppliers[supplier_name]), [On-Time %])
 		formatString: 0.0%

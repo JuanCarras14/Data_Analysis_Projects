@@ -14,19 +14,19 @@ Dashboard design built from the SQLite database used by the [SQL analysis](../sq
 
 ![Inventory Overview](../images/overview.png)
 
-Inventory value, stockout rate, and on-time order KPIs, plus stockout trend, latest inventory value by category, and purchase-order volume by supplier region.
+Latest inventory value, stockout rate, on-time order KPIs, and current products stocked out, plus stockout trend, latest inventory value by category, and purchase-order volume by supplier region.
 
 **Stockouts**
 
 ![Stockouts](../images/stockouts.png)
 
-Worst products by stockout rate plus a detail table for exact values. Product 027 is the highest-risk SKU.
+Worst-product cards compare the riskiest SKU against the average product stockout rate, followed by a ranked product chart and a detail table with weeks stocked out, stockout rate, and latest stock on hand.
 
 **Suppliers**
 
 ![Suppliers](../images/suppliers.png)
 
-Supplier on-time delivery chart and detail table. The page is sorted worst first so unreliable suppliers are visible immediately.
+Supplier count, on-time performance, lowest on-time supplier, late orders, supplier on-time delivery chart, and a detail table. The page is sorted worst first so unreliable suppliers are visible immediately.
 
 ## Power BI Build Notes
 

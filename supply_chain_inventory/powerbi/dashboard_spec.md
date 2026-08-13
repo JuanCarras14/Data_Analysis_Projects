@@ -38,9 +38,31 @@ SUMX(
     inventory_snapshots[stock_on_hand] * RELATED(products[unit_cost])
 )
 
+Latest Snapshot Date = MAX(inventory_snapshots[snapshot_date])
+
+Latest Stock On Hand =
+VAR LatestDate = [Latest Snapshot Date]
+RETURN CALCULATE([Total Stock On Hand], inventory_snapshots[snapshot_date] = LatestDate)
+
+Latest Inventory Value =
+VAR LatestDate = [Latest Snapshot Date]
+RETURN CALCULATE([Inventory Value], inventory_snapshots[snapshot_date] = LatestDate)
+
 Stockout Weeks = SUM(inventory_snapshots[stockout])
 
 Stockout Rate % = DIVIDE([Stockout Weeks], COUNTROWS(inventory_snapshots))
+
+Products Stocked Out =
+COUNTROWS(FILTER(VALUES(products[product_name]), CALCULATE(MAX(inventory_snapshots[stockout])) = 1))
+
+Worst Product =
+CONCATENATEX(TOPN(1, VALUES(products[product_name]), [Stockout Rate %], DESC), products[product_name], ", ")
+
+Worst Product Stockout Rate % =
+MAXX(TOPN(1, VALUES(products[product_name]), [Stockout Rate %], DESC), [Stockout Rate %])
+
+Average Product Stockout Rate % =
+AVERAGEX(VALUES(products[product_name]), [Stockout Rate %])
 
 Total Orders = COUNTROWS(purchase_orders)
 
@@ -51,6 +73,13 @@ CALCULATE(
 )
 
 On-Time % = DIVIDE([On-Time Orders], [Total Orders])
+
+Late Orders = [Total Orders] - [On-Time Orders]
+
+Supplier Count = DISTINCTCOUNT(suppliers[supplier_id])
+
+Lowest On-Time Supplier =
+CONCATENATEX(TOPN(1, VALUES(suppliers[supplier_name]), [On-Time %], ASC), suppliers[supplier_name], ", ")
 ```
 
 Note: `Inventory Value` should be filtered to the latest snapshot week before using it as a current inventory KPI; otherwise historical weekly snapshots are counted together.
@@ -60,7 +89,7 @@ Note: `Inventory Value` should be filtered to the latest snapshot week before us
 ### Page 1 - Inventory Overview
 
 - Slicer: `suppliers[region]`
-- Cards: latest-week `Inventory Value`, `Stockout Rate %`, `On-Time %`
+- Cards: `Latest Inventory Value`, `Stockout Rate %`, `On-Time %`, `Products Stocked Out`
 - Main chart: `Stockout Rate %` by snapshot week
 - Detail left: latest-week `Inventory Value` by `products[category]`
 - Detail right: `Total Orders` by `suppliers[region]`
@@ -69,7 +98,7 @@ Note: `Inventory Value` should be filtered to the latest snapshot week before us
 ### Page 2 - Stockouts
 
 - Slicer: `products[category]`
-- Cards: worst product, worst product stockout rate, average product stockout rate
+- Cards: `Worst Product`, `Worst Product Stockout Rate %`, `Average Product Stockout Rate %`, `Stockout Weeks`
 - Main chart: top 15 `products[product_name]` by `Stockout Rate %`, sorted descending
 - Detail table: `product_id`, `product_name`, `category`, `Stockout Rate %`
 - Finding: Product 027 was stocked out 32.7% of tracked weeks
@@ -77,7 +106,7 @@ Note: `Inventory Value` should be filtered to the latest snapshot week before us
 ### Page 3 - Suppliers
 
 - Slicer: `suppliers[region]`
-- Cards: supplier count, `On-Time %`, lowest on-time supplier
+- Cards: `Supplier Count`, `On-Time %`, `Lowest On-Time Supplier`, `Late Orders`
 - Main chart: `On-Time %` by `suppliers[supplier_name]`, sorted ascending
 - Detail table: `supplier_name`, `region`, `Total Orders`, `On-Time %`
 - Finding: Supplier 7 has the lowest on-time rate, so average lead time alone hides reliability risk

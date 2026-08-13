@@ -14,19 +14,19 @@ Dashboard design built from the clean CSVs in [Python](../python), using the sam
 
 ![Overview](../images/overview.png)
 
-Headline OEE cards plus monthly downtime, OEE by line, and units by line. The page leads with the operating benchmark: average OEE is below the 85% world-class target.
+Headline OEE cards plus target-risk count, monthly downtime, OEE by line, units by line, and an operating detail table with OEE gap, downtime rate, and defect rate. The page leads with the operating benchmark: average OEE is below the 85% world-class target.
 
 **OEE Breakdown**
 
 ![OEE Breakdown](../images/oee_breakdown.png)
 
-Line-level factor table for Availability, Performance, Quality, and OEE, followed by downtime by reason and downtime by reason/line. The main finding is that Line 3's gap is availability, not speed or defects.
+Diagnostic cards show the worst OEE line, Line 3 availability/performance, and the top downtime reason. The page also includes a factor table for Availability, Performance, Quality, OEE, and OEE gap, followed by downtime by reason and downtime by reason/line. The main finding is that Line 3's gap is availability, not speed or defects.
 
 **Cost Analysis**
 
 ![Cost Analysis](../images/cost_analysis.png)
 
-Cost cards and visuals for cost type, cost type by month, and cost per unit by line over time. Materials are the largest cost category, so the cost story starts there.
+Cost cards and visuals for total cost, cost per unit, materials share, highest cost type, cost type by month, and cost per unit over time. Materials are the largest cost category, so the cost story starts there.
 
 ## Power BI Build Notes
 

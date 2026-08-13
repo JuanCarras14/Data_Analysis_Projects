@@ -1,5 +1,5 @@
 table inventory_snapshots
-	lineageTag: 8d64c6b74eb680b6e958e0a23ccf72d5
+	lineageTag: 13cb3b97643072385e805c1a23199804
 
 	partition inventory_snapshots = m
 		let
@@ -34,8 +34,28 @@ table inventory_snapshots
 	measure 'Inventory Value' = SUMX(inventory_snapshots, inventory_snapshots[stock_on_hand] * RELATED(products[unit_cost]))
 		formatString: $#,0
 
+	measure 'Latest Snapshot Date' = MAX(inventory_snapshots[snapshot_date])
+		formatString: Short Date
+
+	measure 'Latest Stock On Hand' = VAR LatestDate = [Latest Snapshot Date] RETURN CALCULATE([Total Stock On Hand], inventory_snapshots[snapshot_date] = LatestDate)
+		formatString: #,0
+
+	measure 'Latest Inventory Value' = VAR LatestDate = [Latest Snapshot Date] RETURN CALCULATE([Inventory Value], inventory_snapshots[snapshot_date] = LatestDate)
+		formatString: $#,0
+
 	measure 'Stockout Weeks' = SUM(inventory_snapshots[stockout])
 		formatString: #,0
 
 	measure 'Stockout Rate %' = DIVIDE([Stockout Weeks], COUNTROWS(inventory_snapshots))
+		formatString: 0.0%
+
+	measure 'Products Stocked Out' = COUNTROWS(FILTER(VALUES(products[product_name]), CALCULATE(MAX(inventory_snapshots[stockout])) = 1))
+		formatString: #,0
+
+	measure 'Worst Product' = CONCATENATEX(TOPN(1, VALUES(products[product_name]), [Stockout Rate %], DESC), products[product_name], ", ")
+
+	measure 'Worst Product Stockout Rate %' = MAXX(TOPN(1, VALUES(products[product_name]), [Stockout Rate %], DESC), [Stockout Rate %])
+		formatString: 0.0%
+
+	measure 'Average Product Stockout Rate %' = AVERAGEX(VALUES(products[product_name]), [Stockout Rate %])
 		formatString: 0.0%

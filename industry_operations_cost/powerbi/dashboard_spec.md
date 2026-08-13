@@ -50,15 +50,21 @@ Total Units = SUM(production_log[units_produced])
 
 Total Defects = SUM(production_log[units_defective])
 
+Good Units = [Total Units] - [Total Defects]
+
 Planned Minutes = SUM(production_log[planned_minutes])
 
 Downtime Minutes = SUM(production_log[downtime_minutes])
 
 Runtime Minutes = [Planned Minutes] - [Downtime Minutes]
 
+Downtime Rate % = DIVIDE([Downtime Minutes], [Planned Minutes])
+
 Availability % = DIVIDE([Runtime Minutes], [Planned Minutes])
 
 Quality % = DIVIDE([Total Units] - [Total Defects], [Total Units])
+
+Defect Rate % = DIVIDE([Total Defects], [Total Units])
 
 Theoretical Units =
 SUMX(
@@ -80,6 +86,21 @@ OEE Target = 0.85
 OEE Gap = [OEE %] - [OEE Target]
 
 OEE Gap Label = FORMAT([OEE Gap], "+0.0%;-0.0%") & " vs 85% target"
+
+Lines Below OEE Target = COUNTROWS(FILTER(VALUES(lines[line_name]), [OEE %] < [OEE Target]))
+
+Worst OEE Line =
+CONCATENATEX(TOPN(1, VALUES(lines[line_name]), [OEE %], ASC), lines[line_name], ", ")
+
+Top Downtime Reason =
+CONCATENATEX(TOPN(1, VALUES(production_log[downtime_reason]), [Downtime Minutes], DESC), production_log[downtime_reason], ", ")
+
+Materials Cost = CALCULATE([Total Cost], monthly_costs[cost_type] = "Materials")
+
+Materials Share % = DIVIDE([Materials Cost], [Total Cost])
+
+Highest Cost Type =
+CONCATENATEX(TOPN(1, VALUES(monthly_costs[cost_type]), [Total Cost], DESC), monthly_costs[cost_type], ", ")
 ```
 
 Sanity check: `OEE %` by `line_name` should run from about 73.4% for Line 3 to 85.8% for Line 2.
@@ -89,7 +110,7 @@ Sanity check: `OEE %` by `line_name` should run from about 73.4% for Line 3 to 8
 ### Page 1 - Overview
 
 - Slicer: `lines[line_name]`
-- Cards: `OEE %`, `Availability %`, `Performance %`, `Quality %`
+- Cards: `OEE %`, `Availability %`, `Performance %`, `Lines Below OEE Target`
 - Main chart: `Downtime Minutes` by `Date[Year-Month]`
 - Detail left: `OEE %` by `lines[line_name]`, sorted ascending, reference line at 85%
 - Detail right: `Total Units` by `lines[line_name]`
@@ -99,7 +120,8 @@ Sanity check: `OEE %` by `line_name` should run from about 73.4% for Line 3 to 8
 
 - Slicer: `lines[line_name]`
 - Cards: lowest OEE line, Line 3 availability, Line 3 performance, Line 3 quality
-- Main visual: table with `line_name`, `area`, `Availability %`, `Performance %`, `Quality %`, `OEE %`
+- Cards: `Worst OEE Line`, `Line 3 Availability`, `Line 3 Performance`, `Top Downtime Reason`
+- Main visual: table with `line_name`, `area`, `Availability %`, `Performance %`, `Quality %`, `OEE %`, `OEE Gap`
 - Detail left: `Downtime Minutes` by `downtime_reason`, sorted descending
 - Detail right: stacked bar with `downtime_reason`, `Downtime Minutes`, and `line_name`
 - Finding: Line 3's issue is availability, not speed or defects
@@ -107,7 +129,7 @@ Sanity check: `OEE %` by `line_name` should run from about 73.4% for Line 3 to 8
 ### Page 3 - Cost Analysis
 
 - Slicer: `lines[line_name]`
-- Cards: `Total Cost`, `Cost per Unit`, `Total Units`
+- Cards: `Total Cost`, `Cost per Unit`, `Materials Share %`, `Highest Cost Type`
 - Main left: `Total Cost` by `monthly_costs[cost_type]`
 - Main right: stacked column of `Total Cost` by `monthly_costs[cost_month]` and `cost_type`
 - Detail full width: `Cost per Unit` by `monthly_costs[cost_month]`, legend `line_name`

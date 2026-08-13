@@ -1,5 +1,5 @@
 table monthly_costs
-	lineageTag: ac5a6a5adfcd05d23c3637d7422dd4cc
+	lineageTag: 0275f645e9c45a97a9de9226bde34955
 
 	partition monthly_costs = m
 		let
@@ -38,3 +38,17 @@ table monthly_costs
 
 	measure 'Cost per Unit' = DIVIDE([Total Cost], [Total Units])
 		formatString: $0.00
+
+	measure 'Materials Cost' = CALCULATE([Total Cost], monthly_costs[cost_type] = "Materials")
+		formatString: $#,0
+
+	measure 'Materials Share %' = DIVIDE([Materials Cost], [Total Cost])
+		formatString: 0.0%
+
+	measure 'Maintenance Cost' = CALCULATE([Total Cost], monthly_costs[cost_type] = "Maintenance")
+		formatString: $#,0
+
+	measure 'Maintenance Share %' = DIVIDE([Maintenance Cost], [Total Cost])
+		formatString: 0.0%
+
+	measure 'Highest Cost Type' = CONCATENATEX(TOPN(1, VALUES(monthly_costs[cost_type]), [Total Cost], DESC), monthly_costs[cost_type], ", ")

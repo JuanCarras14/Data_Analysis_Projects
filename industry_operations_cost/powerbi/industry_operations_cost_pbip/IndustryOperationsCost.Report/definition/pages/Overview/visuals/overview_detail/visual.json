@@ -42,11 +42,39 @@
                       "Entity": "production_log"
                     }
                   },
-                  "Property": "Downtime Minutes"
+                  "Property": "OEE Gap"
                 }
               },
-              "queryRef": "production_log.Downtime Minutes",
-              "nativeQueryRef": "Downtime Minutes"
+              "queryRef": "production_log.OEE Gap",
+              "nativeQueryRef": "OEE Gap"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "production_log"
+                    }
+                  },
+                  "Property": "Downtime Rate %"
+                }
+              },
+              "queryRef": "production_log.Downtime Rate %",
+              "nativeQueryRef": "Downtime Rate %"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "production_log"
+                    }
+                  },
+                  "Property": "Defect Rate %"
+                }
+              },
+              "queryRef": "production_log.Defect Rate %",
+              "nativeQueryRef": "Defect Rate %"
             },
             {
               "field": {

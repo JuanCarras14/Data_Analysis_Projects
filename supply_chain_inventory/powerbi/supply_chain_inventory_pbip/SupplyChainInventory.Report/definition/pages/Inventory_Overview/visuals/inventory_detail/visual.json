@@ -28,11 +28,25 @@
                       "Entity": "inventory_snapshots"
                     }
                   },
-                  "Property": "Inventory Value"
+                  "Property": "Latest Inventory Value"
                 }
               },
-              "queryRef": "inventory_snapshots.Inventory Value",
-              "nativeQueryRef": "Inventory Value"
+              "queryRef": "inventory_snapshots.Latest Inventory Value",
+              "nativeQueryRef": "Latest Inventory Value"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "inventory_snapshots"
+                    }
+                  },
+                  "Property": "Products Stocked Out"
+                }
+              },
+              "queryRef": "inventory_snapshots.Products Stocked Out",
+              "nativeQueryRef": "Products Stocked Out"
             },
             {
               "field": {

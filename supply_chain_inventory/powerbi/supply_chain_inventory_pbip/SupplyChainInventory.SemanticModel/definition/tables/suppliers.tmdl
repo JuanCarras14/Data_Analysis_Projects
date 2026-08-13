@@ -1,5 +1,5 @@
 table suppliers
-	lineageTag: 963957742a737751ace97e682efff80d
+	lineageTag: b2099ee5f51a7423f7c0e4f2d3ab5ec5
 
 	partition suppliers = m
 		let

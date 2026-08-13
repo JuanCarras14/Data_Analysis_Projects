@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
-  "name": "82c31faf88a3d396",
-  "displayName": "Stockouts",
+  "name": "34952a8ebdb599d0",
+  "displayName": "Suppliers",
   "width": 1280,
   "height": 720,
   "displayOption": "FitToPage"

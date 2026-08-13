@@ -94,15 +94,26 @@ def write_json(path: pathlib.Path, data: dict) -> None:
     path.write_text(json.dumps(data, indent=2), encoding="utf-8")
 
 
-def m_csv(path: pathlib.Path) -> str:
+def m_type(data_type: str) -> str:
+    return {
+        "int64": "Int64.Type",
+        "decimal": "type number",
+        "dateTime": "type date",
+        "string": "type text",
+    }[data_type]
+
+
+def m_csv(path: pathlib.Path, columns: list[tuple[str, str]]) -> str:
     safe = path.resolve().as_posix()
+    transforms = ", ".join(f'{{"{column}", {m_type(data_type)}}}' for column, data_type in columns)
     return (
         "let\n"
         f"    Source = Csv.Document(File.Contents(\"{safe}\"),"
         "[Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n"
-        "    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true])\n"
+        "    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),\n"
+        f"    ChangedType = Table.TransformColumnTypes(PromotedHeaders, {{{transforms}}})\n"
         "in\n"
-        "    PromotedHeaders"
+        "    ChangedType"
     )
 
 
@@ -120,7 +131,7 @@ def build_table_tmdl(
         "\t\tmode: import",
         "\t\tsource =",
     ]
-    for expression_line in m_csv(source_path).splitlines():
+    for expression_line in m_csv(source_path, columns).splitlines():
         lines.append("\t\t\t\t" + expression_line)
     lines.append("")
     for column_name, data_type in columns:

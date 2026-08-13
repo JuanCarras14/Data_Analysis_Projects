@@ -1,6 +1,6 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
-  "name": "3e9f2491767ba5c7",
+  "name": "8e7367bd2ee3ec8a",
   "position": {
     "x": 20,
     "y": 20,
@@ -18,7 +18,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Cost Analysis",
+                    "value": "Stockouts",
                     "textStyle": {
                       "fontSize": "24pt"
                     }

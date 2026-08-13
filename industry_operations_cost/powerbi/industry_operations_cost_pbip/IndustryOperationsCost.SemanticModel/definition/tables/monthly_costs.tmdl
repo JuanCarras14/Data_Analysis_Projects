@@ -1,14 +1,15 @@
 table monthly_costs
-	lineageTag: 70a6b448815008833274dcc282063a2c
+	lineageTag: a3dd6b5f6fe2728c3e22d9bc13ae497d
 
 	partition monthly_costs = m
 		mode: import
 		source =
 				let
 				    Source = Csv.Document(File.Contents("C:/Users/juanj/OneDrive/Documents/Data Analysis Projects/industry_operations_cost/python/data/processed/monthly_costs_clean.csv"),[Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
-				    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+				    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    ChangedType = Table.TransformColumnTypes(PromotedHeaders, {{"cost_id", Int64.Type}, {"line_id", Int64.Type}, {"cost_month", type text}, {"cost_type", type text}, {"amount", type number}})
 				in
-				    PromotedHeaders
+				    ChangedType
 
 	column cost_id
 		dataType: int64

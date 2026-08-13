@@ -1,14 +1,15 @@
 table purchase_orders
-	lineageTag: 0be0c15c461604ec5d7e280a3644dc27
+	lineageTag: ec8ea63331f1fd2e400ee113e97bd376
 
 	partition purchase_orders = m
 		mode: import
 		source =
 				let
 				    Source = Csv.Document(File.Contents("C:/Users/juanj/OneDrive/Documents/Data Analysis Projects/supply_chain_inventory/python/data/processed/purchase_orders_clean.csv"),[Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
-				    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+				    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    ChangedType = Table.TransformColumnTypes(PromotedHeaders, {{"po_id", Int64.Type}, {"product_id", Int64.Type}, {"supplier_id", Int64.Type}, {"order_date", type date}, {"expected_delivery_date", type date}, {"actual_delivery_date", type date}, {"quantity_ordered", Int64.Type}})
 				in
-				    PromotedHeaders
+				    ChangedType
 
 	column po_id
 		dataType: int64

@@ -1,0 +1,7 @@
+line_id,line_name,area,target_units_per_hour
+1,Line 1,Machining,94
+2,Line 2,Assembly,174
+3,Line 3,Packaging,111
+4,Line 4,Assembly,97
+5,Line 5,Machining,93
+6,Line 6,Machining,174

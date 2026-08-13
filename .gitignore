@@ -25,6 +25,7 @@ env/
 
 # Local PBIX inspection output
 .tmp_pbix_*/
+.tmp_powerbi_window_shots/
 
 # Synthetic-data projects: raw/processed CSVs are reproducible by rerunning
 # each project's python/generate_and_load_data.py. Where the project also uses SQL

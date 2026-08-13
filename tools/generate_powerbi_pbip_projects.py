@@ -15,6 +15,7 @@ import stat
 import subprocess
 import tempfile
 import time
+import uuid
 from dataclasses import dataclass
 
 
@@ -138,6 +139,28 @@ def write_semantic_model(project_dir: pathlib.Path, model_name: str, tables: dic
     definition = model_dir / "definition"
     tables_dir = definition / "tables"
     tables_dir.mkdir(parents=True)
+    write_json(
+        model_dir / "definition.pbism",
+        {
+            "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/semanticModel/definitionProperties/1.0.0/schema.json",
+            "version": "4.2",
+            "settings": {},
+        },
+    )
+    write_json(
+        model_dir / ".platform",
+        {
+            "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+            "metadata": {
+                "type": "SemanticModel",
+                "displayName": model_name,
+            },
+            "config": {
+                "version": "2.0",
+                "logicalId": str(uuid.uuid5(uuid.NAMESPACE_URL, f"powerbi-semantic-model:{model_name}")),
+            },
+        },
+    )
     (definition / "database.tmdl").write_text(f"database {model_name}\n\tcompatibilityLevel: 1600\n", encoding="utf-8")
     model_lines = ["model Model", "\tculture: en-US", "\tdataAccessOptions", "\t\tlegacyRedirects", "\t\treturnErrorValuesAsNull", ""]
     model_lines.extend(relationships)
@@ -244,6 +267,17 @@ def merge_thick(project_dir: pathlib.Path, report_name: str, model_name: str, de
 
         shutil.rmtree(destination, onexc=reset_permissions)
     run(["report", "merge-to-thick", f"{report_name}.Report", f"{model_name}.SemanticModel", "-o", str(destination)], project_dir)
+    pbip_path = destination / f"{report_name}.pbip"
+    # Keep the PBIP launcher in the minimal format produced by pbi-cli and
+    # accepted by Power BI Desktop Store. The local model is referenced from
+    # definition.pbir via datasetReference.byPath.
+    write_json(
+        pbip_path,
+        {
+            "version": "1.0",
+            "artifacts": [{"report": {"path": f"{report_name}.Report"}}],
+        },
+    )
 
 
 def build_industry() -> None:

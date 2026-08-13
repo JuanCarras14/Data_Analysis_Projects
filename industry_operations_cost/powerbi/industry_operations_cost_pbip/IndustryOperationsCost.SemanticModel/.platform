@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "IndustryOperationsCost"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "3204b31d-a75a-5f04-a846-3f119c95c7e7"
+  }
+}

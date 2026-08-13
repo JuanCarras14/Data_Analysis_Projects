@@ -30,11 +30,23 @@ Supplier on-time delivery chart and detail table. The page is sorted worst first
 
 ## Power BI Build Notes
 
-The model, DAX, page map, and formatting rules are documented in [dashboard_spec.md](./dashboard_spec.md).
+The editable Power BI project is in [supply_chain_inventory_pbip](./supply_chain_inventory_pbip):
+
+- `SupplyChainInventory.pbip` opens the report in Power BI Desktop.
+- `SupplyChainInventory.Report/` contains the PBIR report pages and visuals.
+- `SupplyChainInventory.SemanticModel/` contains the local TMDL semantic model, CSV imports, relationships, and measures.
+
+The model, DAX, page map, and formatting rules are documented in [dashboard_spec.md](./dashboard_spec.md). The project can be rebuilt with:
+
+```powershell
+python tools\generate_powerbi_pbip_projects.py
+```
 
 ## How to run
 
-Open Power BI Desktop, import the four SQLite tables from `supply_chain_inventory/sql/database/supply_chain.db`, apply the relationships and measures in [dashboard_spec.md](./dashboard_spec.md), and save the report as `supply_chain_inventory.pbix`.
+Open `supply_chain_inventory/powerbi/supply_chain_inventory_pbip/SupplyChainInventory.pbip` in Power BI Desktop.
+
+To create a single-file `.pbix`, use Power BI Desktop: **File > Save As > Power BI report (.pbix)** and save it as `supply_chain_inventory.pbix`. The CLI-generated PBIP is committed because `pbir` cannot embed a local `.SemanticModel` into a `.pbix` binary without Power BI Desktop.
 
 ## Project Status
 

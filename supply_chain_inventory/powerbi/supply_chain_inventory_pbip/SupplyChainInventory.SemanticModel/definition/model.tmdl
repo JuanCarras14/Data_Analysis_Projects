@@ -1,0 +1,15 @@
+model Model
+	culture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+	relationship inventory_snapshots_product_id_products_product_id
+		fromColumn: inventory_snapshots.product_id
+		toColumn: products.product_id
+	relationship purchase_orders_product_id_products_product_id
+		fromColumn: purchase_orders.product_id
+		toColumn: products.product_id
+	relationship purchase_orders_supplier_id_suppliers_supplier_id
+		fromColumn: purchase_orders.supplier_id
+		toColumn: suppliers.supplier_id

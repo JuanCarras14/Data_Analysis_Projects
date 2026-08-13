@@ -1,0 +1,41 @@
+table inventory_snapshots
+	lineageTag: 8d64c6b74eb680b6e958e0a23ccf72d5
+
+	partition inventory_snapshots = m
+		let
+		    Source = Csv.Document(File.Contents("C:/Users/juanj/OneDrive/Documents/Data Analysis Projects/supply_chain_inventory/python/data/processed/inventory_snapshots_clean.csv"),[Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+		    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    PromotedHeaders
+
+	column product_id
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: product_id
+
+	column snapshot_date
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: snapshot_date
+
+	column stock_on_hand
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: stock_on_hand
+
+	column stockout
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: stockout
+
+	measure 'Total Stock On Hand' = SUM(inventory_snapshots[stock_on_hand])
+		formatString: #,0
+
+	measure 'Inventory Value' = SUMX(inventory_snapshots, inventory_snapshots[stock_on_hand] * RELATED(products[unit_cost]))
+		formatString: $#,0
+
+	measure 'Stockout Weeks' = SUM(inventory_snapshots[stockout])
+		formatString: #,0
+
+	measure 'Stockout Rate %' = DIVIDE([Stockout Weeks], COUNTROWS(inventory_snapshots))
+		formatString: 0.0%

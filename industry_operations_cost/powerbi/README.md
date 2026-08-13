@@ -30,11 +30,23 @@ Cost cards and visuals for cost type, cost type by month, and cost per unit by l
 
 ## Power BI Build Notes
 
-The model, DAX, page map, and formatting rules are documented in [dashboard_spec.md](./dashboard_spec.md).
+The editable Power BI project is in [industry_operations_cost_pbip](./industry_operations_cost_pbip):
+
+- `IndustryOperationsCost.pbip` opens the report in Power BI Desktop.
+- `IndustryOperationsCost.Report/` contains the PBIR report pages and visuals.
+- `IndustryOperationsCost.SemanticModel/` contains the local TMDL semantic model, CSV imports, relationships, and measures.
+
+The model, DAX, page map, and formatting rules are documented in [dashboard_spec.md](./dashboard_spec.md). The project can be rebuilt with:
+
+```powershell
+python tools\generate_powerbi_pbip_projects.py
+```
 
 ## How to run
 
-Open Power BI Desktop, import the clean CSVs from `industry_operations_cost/python/data/processed/`, apply the relationships and measures in [dashboard_spec.md](./dashboard_spec.md), and save the report as `industry_operations_cost.pbix`.
+Open `industry_operations_cost/powerbi/industry_operations_cost_pbip/IndustryOperationsCost.pbip` in Power BI Desktop.
+
+To create a single-file `.pbix`, use Power BI Desktop: **File > Save As > Power BI report (.pbix)** and save it as `industry_operations_cost.pbix`. The CLI-generated PBIP is committed because `pbir` cannot embed a local `.SemanticModel` into a `.pbix` binary without Power BI Desktop.
 
 ## Project Status
 

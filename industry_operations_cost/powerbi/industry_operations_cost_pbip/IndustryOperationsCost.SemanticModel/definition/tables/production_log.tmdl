@@ -1,0 +1,87 @@
+table production_log
+	lineageTag: 0e55baad2c69770d1ee830f99aa87b28
+
+	partition production_log = m
+		let
+		    Source = Csv.Document(File.Contents("C:/Users/juanj/OneDrive/Documents/Data Analysis Projects/industry_operations_cost/python/data/processed/production_log_clean.csv"),[Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+		    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    PromotedHeaders
+
+	column log_id
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: log_id
+
+	column line_id
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: line_id
+
+	column production_date
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: production_date
+
+	column planned_minutes
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: planned_minutes
+
+	column downtime_minutes
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: downtime_minutes
+
+	column downtime_reason
+		dataType: string
+		summarizeBy: none
+		sourceColumn: downtime_reason
+
+	column units_produced
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: units_produced
+
+	column units_defective
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: units_defective
+
+	measure 'Total Units' = SUM(production_log[units_produced])
+		formatString: #,0
+
+	measure 'Total Defects' = SUM(production_log[units_defective])
+		formatString: #,0
+
+	measure 'Planned Minutes' = SUM(production_log[planned_minutes])
+		formatString: #,0
+
+	measure 'Downtime Minutes' = SUM(production_log[downtime_minutes])
+		formatString: #,0
+
+	measure 'Runtime Minutes' = [Planned Minutes] - [Downtime Minutes]
+		formatString: #,0
+
+	measure 'Availability %' = DIVIDE([Runtime Minutes], [Planned Minutes])
+		formatString: 0.0%
+
+	measure 'Quality %' = DIVIDE([Total Units] - [Total Defects], [Total Units])
+		formatString: 0.0%
+
+	measure 'Theoretical Units' = SUMX(production_log, DIVIDE(production_log[planned_minutes] - production_log[downtime_minutes], 60) * RELATED(lines[target_units_per_hour]))
+		formatString: #,0
+
+	measure 'Performance %' = DIVIDE([Total Units], [Theoretical Units])
+		formatString: 0.0%
+
+	measure 'OEE %' = [Availability %] * [Performance %] * [Quality %]
+		formatString: 0.0%
+
+	measure 'OEE Target' = 0.85
+		formatString: 0.0%
+
+	measure 'OEE Gap' = [OEE %] - [OEE Target]
+		formatString: 0.0%
+
+	measure 'OEE Gap Label' = FORMAT([OEE Gap], "+0.0%;-0.0%") & " vs 85% target"

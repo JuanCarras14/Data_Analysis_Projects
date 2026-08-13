@@ -1,0 +1,12 @@
+model Model
+	culture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+	relationship production_log_line_id_lines_line_id
+		fromColumn: production_log.line_id
+		toColumn: lines.line_id
+	relationship monthly_costs_line_id_lines_line_id
+		fromColumn: monthly_costs.line_id
+		toColumn: lines.line_id

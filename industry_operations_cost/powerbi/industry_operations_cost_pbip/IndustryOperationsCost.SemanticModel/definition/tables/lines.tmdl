@@ -1,0 +1,29 @@
+table lines
+	lineageTag: c402886ed81137fabaac6001b0722a34
+
+	partition lines = m
+		let
+		    Source = Csv.Document(File.Contents("C:/Users/juanj/OneDrive/Documents/Data Analysis Projects/industry_operations_cost/python/data/processed/lines_clean.csv"),[Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+		    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    PromotedHeaders
+
+	column line_id
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: line_id
+
+	column line_name
+		dataType: string
+		summarizeBy: none
+		sourceColumn: line_name
+
+	column area
+		dataType: string
+		summarizeBy: none
+		sourceColumn: area
+
+	column target_units_per_hour
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: target_units_per_hour

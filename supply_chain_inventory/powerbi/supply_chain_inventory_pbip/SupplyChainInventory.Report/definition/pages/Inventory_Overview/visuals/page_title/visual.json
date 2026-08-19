@@ -1,12 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
-  "name": "757190ccb29e396d",
+  "name": "page_title",
   "position": {
-    "x": 20,
-    "y": 20,
-    "width": 480,
-    "height": 120,
-    "z": 0
+    "x": 24,
+    "y": 24,
+    "width": 560,
+    "height": 48,
+    "z": 0,
+    "tabOrder": 0
   },
   "visual": {
     "visualType": "textbox",
@@ -16,11 +17,14 @@
           "properties": {
             "paragraphs": [
               {
+                "horizontalTextAlignment": "left",
                 "textRuns": [
                   {
-                    "value": "Suppliers",
+                    "value": "Inventory Health",
                     "textStyle": {
-                      "fontSize": "24pt"
+                      "fontFamily": "Segoe UI Semibold",
+                      "fontSize": "20pt",
+                      "color": "#1F4E79"
                     }
                   }
                 ]
@@ -31,19 +35,6 @@
       ]
     },
     "visualContainerObjects": {
-      "title": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            }
-          }
-        }
-      ],
       "background": [
         {
           "properties": {
@@ -58,6 +49,19 @@
         }
       ],
       "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "dropShadow": [
         {
           "properties": {
             "show": {

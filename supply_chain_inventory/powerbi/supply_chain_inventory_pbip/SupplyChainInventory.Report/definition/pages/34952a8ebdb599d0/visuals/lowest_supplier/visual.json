@@ -63,11 +63,11 @@
     }
   },
   "position": {
-    "x": 648,
+    "x": 856,
     "y": 88,
-    "width": 296,
-    "height": 120,
-    "z": 0,
+    "width": 400,
+    "height": 112,
+    "z": 2002,
     "tabOrder": 0
   },
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json"

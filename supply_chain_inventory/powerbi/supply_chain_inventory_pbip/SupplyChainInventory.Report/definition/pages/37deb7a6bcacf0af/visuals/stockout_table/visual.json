@@ -14,20 +14,6 @@
                       "Entity": "products"
                     }
                   },
-                  "Property": "product_id"
-                }
-              },
-              "queryRef": "products.product_id",
-              "nativeQueryRef": "product_id"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "products"
-                    }
-                  },
                   "Property": "product_name"
                 }
               },
@@ -89,6 +75,20 @@
               },
               "queryRef": "inventory_snapshots.Latest Stock On Hand",
               "nativeQueryRef": "Latest Stock On Hand"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "inventory_snapshots"
+                    }
+                  },
+                  "Property": "Stockout Bar"
+                }
+              },
+              "queryRef": "inventory_snapshots.Stockout Bar",
+              "nativeQueryRef": "Stockout Bar"
             }
           ]
         }
@@ -110,7 +110,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Stockout Detail'"
+                  "Value": "'Products Ranked by Stockout Rate'"
                 }
               }
             }
@@ -134,10 +134,10 @@
   },
   "position": {
     "x": 24,
-    "y": 472,
+    "y": 200,
     "width": 1232,
-    "height": 200,
-    "z": 0,
+    "height": 496,
+    "z": 3000,
     "tabOrder": 0
   },
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json"

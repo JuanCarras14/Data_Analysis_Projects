@@ -70,11 +70,11 @@
                       "Entity": "inventory_snapshots"
                     }
                   },
-                  "Property": "Latest Stock On Hand"
+                  "Property": "Stockout Bar"
                 }
               },
-              "queryRef": "inventory_snapshots.Latest Stock On Hand",
-              "nativeQueryRef": "Latest Stock On Hand"
+              "queryRef": "inventory_snapshots.Stockout Bar",
+              "nativeQueryRef": "Stockout Bar"
             },
             {
               "field": {
@@ -84,17 +84,196 @@
                       "Entity": "inventory_snapshots"
                     }
                   },
-                  "Property": "Stockout Bar"
+                  "Property": "Latest Stock On Hand"
                 }
               },
-              "queryRef": "inventory_snapshots.Stockout Bar",
-              "nativeQueryRef": "Stockout Bar"
+              "queryRef": "inventory_snapshots.Latest Stock On Hand",
+              "nativeQueryRef": "Latest Stock On Hand"
             }
           ]
         }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "inventory_snapshots"
+                  }
+                },
+                "Property": "Stockout Rate %"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
       }
     },
-    "objects": {},
+    "objects": {
+      "grid": [
+        {
+          "properties": {
+            "rowPadding": {
+              "expr": {
+                "Literal": {
+                  "Value": "2D"
+                }
+              }
+            },
+            "gridVertical": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "imageHeight": {
+              "expr": {
+                "Literal": {
+                  "Value": "18D"
+                }
+              }
+            },
+            "imageWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "300D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "values": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "wordWrap": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "wordWrap": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "190D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "products.product_name"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "140D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "products.category"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "110D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "inventory_snapshots.Stockout Weeks"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "110D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "inventory_snapshots.Stockout Rate %"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "400D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "inventory_snapshots.Stockout Bar"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "160D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "inventory_snapshots.Latest Stock On Hand"
+          }
+        }
+      ]
+    },
     "drillFilterOtherVisuals": true,
     "visualContainerObjects": {
       "title": [
@@ -134,9 +313,9 @@
   },
   "position": {
     "x": 24,
-    "y": 200,
+    "y": 208,
     "width": 1232,
-    "height": 496,
+    "height": 488,
     "z": 3000,
     "tabOrder": 0
   },

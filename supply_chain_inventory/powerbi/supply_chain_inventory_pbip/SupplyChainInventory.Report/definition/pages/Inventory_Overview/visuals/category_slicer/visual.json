@@ -1,5 +1,5 @@
 {
-  "name": "region_slicer",
+  "name": "category_slicer",
   "visual": {
     "visualType": "slicer",
     "query": {
@@ -11,20 +11,34 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "suppliers"
+                      "Entity": "products"
                     }
                   },
-                  "Property": "region"
+                  "Property": "category"
                 }
               },
-              "queryRef": "suppliers.region",
-              "nativeQueryRef": "region"
+              "queryRef": "products.category",
+              "nativeQueryRef": "category"
             }
           ]
         }
       }
     },
-    "objects": {},
+    "objects": {
+      "data": [
+        {
+          "properties": {
+            "mode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Dropdown'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
     "drillFilterOtherVisuals": true,
     "visualContainerObjects": {
       "title": [
@@ -66,7 +80,7 @@
     "x": 1032,
     "y": 24,
     "width": 224,
-    "height": 48,
+    "height": 64,
     "z": 1000,
     "tabOrder": 0
   },

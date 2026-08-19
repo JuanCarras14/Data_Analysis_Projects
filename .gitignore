@@ -2,6 +2,12 @@
 .DS_Store
 Thumbs.db
 
+# pbir CLI local cache/config
+.pbir/
+
+# Power BI Desktop local project state (cache, editor/local settings)
+.pbi/
+
 # Archivos de configuración de editores
 .vscode/
 *.swp

@@ -1,6 +1,67 @@
 table monthly_costs
 	lineageTag: a3dd6b5f6fe2728c3e22d9bc13ae497d
 
+	measure 'Total Cost' = SUM(monthly_costs[amount])
+		formatString: $#,0
+		lineageTag: 461801dc-ed14-4b17-90d4-b098ebb20787
+
+	measure 'Cost per Unit' = DIVIDE([Total Cost], [Total Units])
+		formatString: $0.00
+		lineageTag: d0843175-865a-48ef-b929-00c748d29694
+
+	measure 'Materials Cost' = CALCULATE([Total Cost], monthly_costs[cost_type] = "Materials")
+		formatString: $#,0
+		lineageTag: 9aa9c013-48e3-435c-a3b7-2e923c724dbd
+
+	measure 'Materials Share %' = DIVIDE([Materials Cost], [Total Cost])
+		formatString: 0.0%
+		lineageTag: c4ab9fce-071e-468a-8357-b3d5a94d114f
+
+	measure 'Maintenance Cost' = CALCULATE([Total Cost], monthly_costs[cost_type] = "Maintenance")
+		formatString: $#,0
+		lineageTag: 0151d151-0a54-47c1-8b99-9421886ca7ba
+
+	measure 'Maintenance Share %' = DIVIDE([Maintenance Cost], [Total Cost])
+		formatString: 0.0%
+		lineageTag: 96a26779-8ecf-411f-9ad0-c52e712dcb1b
+
+	measure 'Highest Cost Type' = CONCATENATEX(TOPN(1, VALUES(monthly_costs[cost_type]), [Total Cost], DESC), monthly_costs[cost_type], ", ")
+		lineageTag: 8674eaca-fb15-43c2-945d-3b940568f780
+
+	column cost_id
+		dataType: int64
+		lineageTag: e4d0e5e4-ae25-4c95-97ff-d9eabe2e9d12
+		summarizeBy: none
+		sourceColumn: cost_id
+
+	column line_id
+		dataType: int64
+		lineageTag: 55ed5d50-82e4-4bb9-ad7d-65d5fbd0d561
+		summarizeBy: none
+		sourceColumn: line_id
+
+	column cost_month
+		dataType: string
+		lineageTag: e4bdf517-a307-4369-a250-9c5ee21c7f5e
+		summarizeBy: none
+		sourceColumn: cost_month
+
+	column cost_type
+		dataType: string
+		lineageTag: fc787a16-9da6-4187-9816-d3f3bbb8cd22
+		summarizeBy: none
+		sourceColumn: cost_type
+
+	column amount
+		dataType: double
+		lineageTag: d4870252-78e4-45c4-b11f-35b0885fdbf8
+		summarizeBy: sum
+		sourceColumn: amount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
 	partition monthly_costs = m
 		mode: import
 		source =
@@ -11,47 +72,3 @@ table monthly_costs
 				in
 				    ChangedType
 
-	column cost_id
-		dataType: int64
-		summarizeBy: none
-		sourceColumn: cost_id
-
-	column line_id
-		dataType: int64
-		summarizeBy: none
-		sourceColumn: line_id
-
-	column cost_month
-		dataType: string
-		summarizeBy: none
-		sourceColumn: cost_month
-
-	column cost_type
-		dataType: string
-		summarizeBy: none
-		sourceColumn: cost_type
-
-	column amount
-		dataType: decimal
-		summarizeBy: none
-		sourceColumn: amount
-
-	measure 'Total Cost' = SUM(monthly_costs[amount])
-		formatString: $#,0
-
-	measure 'Cost per Unit' = DIVIDE([Total Cost], [Total Units])
-		formatString: $0.00
-
-	measure 'Materials Cost' = CALCULATE([Total Cost], monthly_costs[cost_type] = "Materials")
-		formatString: $#,0
-
-	measure 'Materials Share %' = DIVIDE([Materials Cost], [Total Cost])
-		formatString: 0.0%
-
-	measure 'Maintenance Cost' = CALCULATE([Total Cost], monthly_costs[cost_type] = "Maintenance")
-		formatString: $#,0
-
-	measure 'Maintenance Share %' = DIVIDE([Maintenance Cost], [Total Cost])
-		formatString: 0.0%
-
-	measure 'Highest Cost Type' = CONCATENATEX(TOPN(1, VALUES(monthly_costs[cost_type]), [Total Cost], DESC), monthly_costs[cost_type], ", ")

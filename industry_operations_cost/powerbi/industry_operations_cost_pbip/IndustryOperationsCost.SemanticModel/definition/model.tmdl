@@ -1,12 +1,23 @@
 model Model
 	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
 	dataAccessOptions
 		legacyRedirects
 		returnErrorValuesAsNull
 
-	relationship production_log_line_id_lines_line_id
-		fromColumn: production_log.line_id
-		toColumn: lines.line_id
-	relationship monthly_costs_line_id_lines_line_id
-		fromColumn: monthly_costs.line_id
-		toColumn: lines.line_id
+annotation PBI_QueryOrder = ["lines","monthly_costs","production_log"]
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table lines
+ref table monthly_costs
+ref table production_log
+ref table DateTableTemplate_f941d07c-4c92-4c0a-b422-1a3acbc46620
+ref table LocalDateTable_d8973465-67ca-4f4b-9cc4-aac2cca73408
+ref table LocalDateTable_d821f59f-e0e5-4c30-9959-cb6967fb31b0
+
+ref cultureInfo en-US
+

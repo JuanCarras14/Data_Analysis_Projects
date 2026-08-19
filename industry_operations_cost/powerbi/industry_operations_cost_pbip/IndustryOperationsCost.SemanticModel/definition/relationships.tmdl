@@ -1,0 +1,18 @@
+relationship production_log_line_id_lines_line_id
+	fromColumn: production_log.line_id
+	toColumn: lines.line_id
+
+relationship monthly_costs_line_id_lines_line_id
+	fromColumn: monthly_costs.line_id
+	toColumn: lines.line_id
+
+relationship 515f3b54-817b-4342-800f-6121e64f01fd
+	joinOnDateBehavior: datePartOnly
+	fromColumn: production_log.production_date
+	toColumn: LocalDateTable_d8973465-67ca-4f4b-9cc4-aac2cca73408.Date
+
+relationship 8d54b993-27ac-486e-94c5-1f31aded4b3a
+	joinOnDateBehavior: datePartOnly
+	fromColumn: production_log.production_month
+	toColumn: LocalDateTable_d821f59f-e0e5-4c30-9959-cb6967fb31b0.Date
+

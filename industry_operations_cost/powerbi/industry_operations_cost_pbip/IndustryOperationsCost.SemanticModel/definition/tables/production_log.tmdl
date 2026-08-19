@@ -1,115 +1,195 @@
 table production_log
 	lineageTag: 24f4c3ebffa8dc36242e1d9d9f8ef1ec
 
+	measure 'Total Units' = SUM(production_log[units_produced])
+		formatString: #,0
+		lineageTag: 02e79eb8-46cb-4d29-b4e4-428dd670b1ca
+
+	measure 'Total Defects' = SUM(production_log[units_defective])
+		formatString: #,0
+		lineageTag: 3650a41b-92b5-483c-887d-3d23bd4103e6
+
+	measure 'Good Units' = [Total Units] - [Total Defects]
+		formatString: #,0
+		lineageTag: 4178b237-88d7-44e1-adbb-86fc5f189abf
+
+	measure 'Planned Minutes' = SUM(production_log[planned_minutes])
+		formatString: #,0
+		lineageTag: 7824f026-5675-4eed-8c25-67f2688b7951
+
+	measure 'Downtime Minutes' = SUM(production_log[downtime_minutes])
+		formatString: #,0
+		lineageTag: 81e52ce2-f573-4af1-aaee-a5076f4da6e6
+
+	measure 'Runtime Minutes' = [Planned Minutes] - [Downtime Minutes]
+		formatString: #,0
+		lineageTag: 79de74c3-7e03-4173-b737-6eaf29cf6dae
+
+	measure 'Downtime Rate %' = DIVIDE([Downtime Minutes], [Planned Minutes])
+		formatString: 0.0%
+		lineageTag: dc4da622-8a49-4357-b24f-523bd1c25cb6
+
+	measure 'Availability %' = DIVIDE([Runtime Minutes], [Planned Minutes])
+		formatString: 0.0%
+		lineageTag: 1f9b4797-2f55-4e6a-b7e1-2f3746c5771f
+
+	measure 'Quality %' = DIVIDE([Total Units] - [Total Defects], [Total Units])
+		formatString: 0.0%
+		lineageTag: 4c6f89d2-2b32-425f-b998-1ccb27220480
+
+	measure 'Defect Rate %' = DIVIDE([Total Defects], [Total Units])
+		formatString: 0.0%
+		lineageTag: 218c9ced-1cd4-45ca-a5e8-f43868070b4b
+
+	measure 'Theoretical Units' = SUMX(production_log, DIVIDE(production_log[planned_minutes] - production_log[downtime_minutes], 60) * RELATED(lines[target_units_per_hour]))
+		formatString: #,0
+		lineageTag: fe02d8f2-693b-4cea-ab06-6d75cc8e6887
+
+	measure 'Performance %' = DIVIDE([Total Units], [Theoretical Units])
+		formatString: 0.0%
+		lineageTag: 26df7966-c8de-4fbc-af99-a1ec058be07a
+
+	measure 'OEE %' = [Availability %] * [Performance %] * [Quality %]
+		formatString: 0.0%
+		lineageTag: 62197001-981a-4782-adf1-06ca3469fbf6
+
+	measure 'OEE Target' = 0.85
+		formatString: 0.0%
+		lineageTag: ad25e2bb-8c89-4fc2-b621-fef6fad51fc9
+
+	measure 'OEE Gap' = [OEE %] - [OEE Target]
+		formatString: 0.0%
+		lineageTag: 2b95dc72-64b2-4399-a0f3-aab4575096ea
+
+	measure 'OEE Gap Label' = FORMAT([OEE Gap], "+0.0%;-0.0%") & " vs 85% target"
+		lineageTag: a242fd7b-621f-4429-93dc-d722c596fa93
+
+	measure 'Lines Below OEE Target' = COUNTROWS(FILTER(VALUES(lines[line_name]), [OEE %] < [OEE Target]))
+		formatString: #,0
+		lineageTag: d8a11f3b-e999-4f84-b598-8dd34b3973e2
+
+	measure 'Worst OEE Line' = CONCATENATEX(TOPN(1, VALUES(lines[line_name]), [OEE %], ASC), lines[line_name], ", ")
+		lineageTag: 107f60f1-41fc-4f2d-90b0-db683f0f23fc
+
+	measure 'Top Downtime Reason' = CONCATENATEX(TOPN(1, VALUES(production_log[downtime_reason]), [Downtime Minutes], DESC), production_log[downtime_reason], ", ")
+		lineageTag: 04ba19b2-02da-4fc8-8090-66924eec256e
+
+	measure 'Line 3 Availability' = CALCULATE([Availability %], lines[line_name] = "Line 3")
+		formatString: 0.0%
+		lineageTag: 59cc5f5e-d44f-48b5-b153-2c7f6ecf9a16
+
+	measure 'Line 3 Performance' = CALCULATE([Performance %], lines[line_name] = "Line 3")
+		formatString: 0.0%
+		lineageTag: 87488e6e-78d6-4855-a3bc-1169b337f0fe
+
+	measure 'Line 3 Quality' = CALCULATE([Quality %], lines[line_name] = "Line 3")
+		formatString: 0.0%
+		lineageTag: 80a70771-8d1a-4b7f-838f-52346c5ef474
+
+	measure 'Worst Line Availability' = CALCULATE([Availability %], TOPN(1, VALUES(lines[line_name]), [OEE %], ASC))
+		formatString: 0.0%
+		lineageTag: edbe7d11-f965-41a4-accc-7905fdf94511
+
+	measure 'Worst Line Performance' = CALCULATE([Performance %], TOPN(1, VALUES(lines[line_name]), [OEE %], ASC))
+		formatString: 0.0%
+		lineageTag: d34e428f-22b5-431b-a83f-8fd69c2cbcd8
+
+	measure 'Worst Line Quality' = CALCULATE([Quality %], TOPN(1, VALUES(lines[line_name]), [OEE %], ASC))
+		formatString: 0.0%
+		lineageTag: 6b9d7c29-6080-4ef6-a4ac-339479efe5ab
+
+	measure 'OEE Bar Color' = IF([OEE %] < [OEE Target], "#D4602E", "#1F4E79")
+		lineageTag: 16ea0439-3d2c-4990-b2d5-bf948a9d7b10
+
+	column log_id
+		dataType: int64
+		lineageTag: c575e2d9-5c11-4924-85e1-0983899ab3d5
+		summarizeBy: sum
+		sourceColumn: log_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column line_id
+		dataType: int64
+		lineageTag: 370e2f17-8880-4830-a5fb-eec5f82fca6e
+		summarizeBy: none
+		sourceColumn: line_id
+
+	column production_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: cf489fc1-0dee-456d-84a7-cbec2fb5b97b
+		summarizeBy: none
+		sourceColumn: production_date
+
+		variation Variation
+			isDefault
+			relationship: 515f3b54-817b-4342-800f-6121e64f01fd
+			defaultHierarchy: LocalDateTable_d8973465-67ca-4f4b-9cc4-aac2cca73408.'Date Hierarchy'
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column planned_minutes
+		dataType: int64
+		lineageTag: 9a91cf0e-9dbd-48a6-9354-960b9ea681f5
+		summarizeBy: sum
+		sourceColumn: planned_minutes
+
+		annotation SummarizationSetBy = Automatic
+
+	column downtime_minutes
+		dataType: int64
+		lineageTag: eed59137-c1bf-4f12-b385-472ab3a75786
+		summarizeBy: sum
+		sourceColumn: downtime_minutes
+
+		annotation SummarizationSetBy = Automatic
+
+	column downtime_reason
+		dataType: string
+		lineageTag: 1c5b9202-443a-436c-98b5-1d01ec30c7d4
+		summarizeBy: none
+		sourceColumn: downtime_reason
+
+	column units_produced
+		dataType: int64
+		lineageTag: ddfc5b11-3f80-4e5e-b751-4f5fc2bb4cbf
+		summarizeBy: sum
+		sourceColumn: units_produced
+
+		annotation SummarizationSetBy = Automatic
+
+	column units_defective
+		dataType: int64
+		lineageTag: fe6bad96-64a3-437d-b583-e77129d3ca14
+		summarizeBy: sum
+		sourceColumn: units_defective
+
+		annotation SummarizationSetBy = Automatic
+
+	column production_month
+		dataType: dateTime
+		formatString: mmm yyyy
+		lineageTag: 2c93f732-c43b-4176-bbee-3c906b4d23d1
+		summarizeBy: none
+		sourceColumn: production_month
+
+		variation Variation
+			isDefault
+			relationship: 8d54b993-27ac-486e-94c5-1f31aded4b3a
+			defaultHierarchy: LocalDateTable_d821f59f-e0e5-4c30-9959-cb6967fb31b0.'Date Hierarchy'
+
+		annotation UnderlyingDateTimeDataType = Date
+
 	partition production_log = m
 		mode: import
 		source =
 				let
 				    Source = Csv.Document(File.Contents("C:/Users/juanj/OneDrive/Documents/Data Analysis Projects/industry_operations_cost/python/data/processed/production_log_clean.csv"),[Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
 				    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
-				    ChangedType = Table.TransformColumnTypes(PromotedHeaders, {{"log_id", Int64.Type}, {"line_id", Int64.Type}, {"production_date", type date}, {"planned_minutes", Int64.Type}, {"downtime_minutes", Int64.Type}, {"downtime_reason", type text}, {"units_produced", Int64.Type}, {"units_defective", Int64.Type}})
+				    ChangedType = Table.TransformColumnTypes(PromotedHeaders, {{"log_id", Int64.Type}, {"line_id", Int64.Type}, {"production_date", type date}, {"planned_minutes", Int64.Type}, {"downtime_minutes", Int64.Type}, {"downtime_reason", type text}, {"units_produced", Int64.Type}, {"units_defective", Int64.Type}}),
+				    AddedMonth = Table.AddColumn(ChangedType, "production_month", each Date.StartOfMonth([production_date]), type date)
 				in
-				    ChangedType
+				    AddedMonth
 
-	column log_id
-		dataType: int64
-		summarizeBy: none
-		sourceColumn: log_id
-
-	column line_id
-		dataType: int64
-		summarizeBy: none
-		sourceColumn: line_id
-
-	column production_date
-		dataType: dateTime
-		summarizeBy: none
-		sourceColumn: production_date
-
-	column planned_minutes
-		dataType: int64
-		summarizeBy: none
-		sourceColumn: planned_minutes
-
-	column downtime_minutes
-		dataType: int64
-		summarizeBy: none
-		sourceColumn: downtime_minutes
-
-	column downtime_reason
-		dataType: string
-		summarizeBy: none
-		sourceColumn: downtime_reason
-
-	column units_produced
-		dataType: int64
-		summarizeBy: none
-		sourceColumn: units_produced
-
-	column units_defective
-		dataType: int64
-		summarizeBy: none
-		sourceColumn: units_defective
-
-	measure 'Total Units' = SUM(production_log[units_produced])
-		formatString: #,0
-
-	measure 'Total Defects' = SUM(production_log[units_defective])
-		formatString: #,0
-
-	measure 'Good Units' = [Total Units] - [Total Defects]
-		formatString: #,0
-
-	measure 'Planned Minutes' = SUM(production_log[planned_minutes])
-		formatString: #,0
-
-	measure 'Downtime Minutes' = SUM(production_log[downtime_minutes])
-		formatString: #,0
-
-	measure 'Runtime Minutes' = [Planned Minutes] - [Downtime Minutes]
-		formatString: #,0
-
-	measure 'Downtime Rate %' = DIVIDE([Downtime Minutes], [Planned Minutes])
-		formatString: 0.0%
-
-	measure 'Availability %' = DIVIDE([Runtime Minutes], [Planned Minutes])
-		formatString: 0.0%
-
-	measure 'Quality %' = DIVIDE([Total Units] - [Total Defects], [Total Units])
-		formatString: 0.0%
-
-	measure 'Defect Rate %' = DIVIDE([Total Defects], [Total Units])
-		formatString: 0.0%
-
-	measure 'Theoretical Units' = SUMX(production_log, DIVIDE(production_log[planned_minutes] - production_log[downtime_minutes], 60) * RELATED(lines[target_units_per_hour]))
-		formatString: #,0
-
-	measure 'Performance %' = DIVIDE([Total Units], [Theoretical Units])
-		formatString: 0.0%
-
-	measure 'OEE %' = [Availability %] * [Performance %] * [Quality %]
-		formatString: 0.0%
-
-	measure 'OEE Target' = 0.85
-		formatString: 0.0%
-
-	measure 'OEE Gap' = [OEE %] - [OEE Target]
-		formatString: 0.0%
-
-	measure 'OEE Gap Label' = FORMAT([OEE Gap], "+0.0%;-0.0%") & " vs 85% target"
-
-	measure 'Lines Below OEE Target' = COUNTROWS(FILTER(VALUES(lines[line_name]), [OEE %] < [OEE Target]))
-		formatString: #,0
-
-	measure 'Worst OEE Line' = CONCATENATEX(TOPN(1, VALUES(lines[line_name]), [OEE %], ASC), lines[line_name], ", ")
-
-	measure 'Top Downtime Reason' = CONCATENATEX(TOPN(1, VALUES(production_log[downtime_reason]), [Downtime Minutes], DESC), production_log[downtime_reason], ", ")
-
-	measure 'Line 3 Availability' = CALCULATE([Availability %], lines[line_name] = "Line 3")
-		formatString: 0.0%
-
-	measure 'Line 3 Performance' = CALCULATE([Performance %], lines[line_name] = "Line 3")
-		formatString: 0.0%
-
-	measure 'Line 3 Quality' = CALCULATE([Quality %], lines[line_name] = "Line 3")
-		formatString: 0.0%
+	measure 'OEE Gap Color' = IF([OEE Gap] < 0, "#D4602E", "#2B7A78")

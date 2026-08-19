@@ -1,6 +1,30 @@
 table lines
 	lineageTag: 8d4e1acb6e156cec9573b8328c9785b0
 
+	column line_id
+		dataType: int64
+		lineageTag: 179c430c-c5e4-4983-8def-cc9627334ec5
+		summarizeBy: none
+		sourceColumn: line_id
+
+	column line_name
+		dataType: string
+		lineageTag: a287fd2b-b0bf-420d-82b6-1e9b40e6cbc3
+		summarizeBy: none
+		sourceColumn: line_name
+
+	column area
+		dataType: string
+		lineageTag: 22197fe7-db4e-4a35-a521-6300c9e62d80
+		summarizeBy: none
+		sourceColumn: area
+
+	column target_units_per_hour
+		dataType: int64
+		lineageTag: b2cedd49-bf63-42c0-a7f4-cc096a756232
+		summarizeBy: none
+		sourceColumn: target_units_per_hour
+
 	partition lines = m
 		mode: import
 		source =
@@ -11,22 +35,3 @@ table lines
 				in
 				    ChangedType
 
-	column line_id
-		dataType: int64
-		summarizeBy: none
-		sourceColumn: line_id
-
-	column line_name
-		dataType: string
-		summarizeBy: none
-		sourceColumn: line_name
-
-	column area
-		dataType: string
-		summarizeBy: none
-		sourceColumn: area
-
-	column target_units_per_hour
-		dataType: int64
-		summarizeBy: none
-		sourceColumn: target_units_per_hour

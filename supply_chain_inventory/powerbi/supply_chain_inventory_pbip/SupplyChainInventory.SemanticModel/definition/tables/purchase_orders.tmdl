@@ -59,10 +59,10 @@ table purchase_orders
 	measure 'Late Orders' = [Total Orders] - [On-Time Orders]
 		formatString: #,0
 
-	measure 'Supplier Count' = DISTINCTCOUNT(suppliers[supplier_id])
+	measure 'Supplier Count' = CALCULATE(DISTINCTCOUNT(suppliers[supplier_id]), suppliers[supplier_id] <> -1)
 		formatString: #,0
 
-	measure 'Lowest On-Time Supplier' = CONCATENATEX(TOPN(1, VALUES(suppliers[supplier_name]), [On-Time %], ASC), suppliers[supplier_name], ", ")
+	measure 'Lowest On-Time Supplier' = CONCATENATEX(TOPN(1, CALCULATETABLE(VALUES(suppliers[supplier_name]), suppliers[supplier_id] <> -1), [On-Time %], ASC), suppliers[supplier_name], ", ")
 
-	measure 'Lowest Supplier On-Time %' = MINX(VALUES(suppliers[supplier_name]), [On-Time %])
+	measure 'Lowest Supplier On-Time %' = MINX(CALCULATETABLE(VALUES(suppliers[supplier_name]), suppliers[supplier_id] <> -1), [On-Time %])
 		formatString: 0.0%

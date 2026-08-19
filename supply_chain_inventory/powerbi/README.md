@@ -36,11 +36,7 @@ The editable Power BI project is in [supply_chain_inventory_pbip](./supply_chain
 - `SupplyChainInventory.Report/` contains the PBIR report pages and visuals.
 - `SupplyChainInventory.SemanticModel/` contains the local TMDL semantic model, CSV imports, relationships, and measures.
 
-The model, DAX, page map, and formatting rules are documented in [dashboard_spec.md](./dashboard_spec.md). The project can be rebuilt with:
-
-```powershell
-python tools\generate_powerbi_pbip_projects.py
-```
+The model, DAX, page map, and formatting rules are documented in [dashboard_spec.md](./dashboard_spec.md).
 
 ## How to run
 

@@ -64,3 +64,6 @@ learning-notes/
 
 # Not part of the portfolio
 **/node_modules/
+
+# Internal build scripts, not portfolio content
+tools/

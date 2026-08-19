@@ -62,6 +62,5 @@ wastewater_effluent_quality/python/data/processed/
 # Personal study notes, not part of the portfolio
 learning-notes/
 
-# Not part of the portfolio: local tooling / job-apply helper + any node_modules
-assisted-job-apply/
+# Not part of the portfolio
 **/node_modules/

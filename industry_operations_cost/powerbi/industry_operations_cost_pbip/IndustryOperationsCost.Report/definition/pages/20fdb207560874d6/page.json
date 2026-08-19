@@ -1,8 +1,0 @@
-{
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
-  "name": "20fdb207560874d6",
-  "displayName": "OEE Breakdown",
-  "width": 1280,
-  "height": 720,
-  "displayOption": "FitToPage"
-}

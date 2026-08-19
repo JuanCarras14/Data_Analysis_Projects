@@ -1,5 +1,14 @@
 {
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "cost_per_unit_month",
+  "position": {
+    "x": 24,
+    "y": 440,
+    "z": 5000,
+    "height": 256,
+    "width": 1232,
+    "tabOrder": 0
+  },
   "visual": {
     "visualType": "lineChart",
     "query": {
@@ -18,7 +27,8 @@
                 }
               },
               "queryRef": "monthly_costs.cost_month",
-              "nativeQueryRef": "cost_month"
+              "nativeQueryRef": "cost_month",
+              "active": true
             }
           ]
         },
@@ -42,8 +52,6 @@
         }
       }
     },
-    "objects": {},
-    "drillFilterOtherVisuals": true,
     "visualContainerObjects": {
       "title": [
         {
@@ -78,15 +86,7 @@
           }
         }
       ]
-    }
-  },
-  "position": {
-    "x": 24,
-    "y": 472,
-    "width": 1232,
-    "height": 200,
-    "z": 0,
-    "tabOrder": 0
-  },
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json"
+    },
+    "drillFilterOtherVisuals": true
+  }
 }

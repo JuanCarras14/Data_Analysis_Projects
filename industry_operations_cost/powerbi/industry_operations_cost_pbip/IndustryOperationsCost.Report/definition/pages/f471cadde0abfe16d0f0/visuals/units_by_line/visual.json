@@ -1,16 +1,16 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
-  "name": "cost_type",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "units_by_line",
   "position": {
     "x": 24,
     "y": 216,
-    "z": 3000,
-    "height": 208,
     "width": 608,
+    "height": 208,
+    "z": 3000,
     "tabOrder": 0
   },
   "visual": {
-    "visualType": "barChart",
+    "visualType": "clusteredColumnChart",
     "query": {
       "queryState": {
         "Category": {
@@ -20,15 +20,16 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "monthly_costs"
+                      "Entity": "lines"
                     }
                   },
-                  "Property": "cost_type"
+                  "Property": "line_name"
                 }
               },
-              "queryRef": "monthly_costs.cost_type",
-              "nativeQueryRef": "cost_type",
-              "active": true
+              "queryRef": "lines.line_name",
+              "nativeQueryRef": "Line",
+              "active": true,
+              "displayName": "Line"
             }
           ]
         },
@@ -39,14 +40,14 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "monthly_costs"
+                      "Entity": "production_log"
                     }
                   },
-                  "Property": "Total Cost"
+                  "Property": "Total Units"
                 }
               },
-              "queryRef": "monthly_costs.Total Cost",
-              "nativeQueryRef": "Total Cost"
+              "queryRef": "production_log.Total Units",
+              "nativeQueryRef": "Total Units"
             }
           ]
         }
@@ -58,10 +59,10 @@
               "Measure": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "monthly_costs"
+                    "Entity": "production_log"
                   }
                 },
-                "Property": "Total Cost"
+                "Property": "Total Units"
               }
             },
             "direction": "Descending"
@@ -84,7 +85,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Cost by Type'"
+                  "Value": "'Units by Line'"
                 }
               }
             }

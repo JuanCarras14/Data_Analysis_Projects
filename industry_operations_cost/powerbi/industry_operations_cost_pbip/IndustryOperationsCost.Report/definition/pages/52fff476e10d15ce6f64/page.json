@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
-  "name": "3f887fe5842984ee",
-  "displayName": "Cost Analysis",
+  "name": "52fff476e10d15ce6f64",
+  "displayName": "Overview",
   "displayOption": "FitToPage",
   "width": 1280,
   "height": 720,

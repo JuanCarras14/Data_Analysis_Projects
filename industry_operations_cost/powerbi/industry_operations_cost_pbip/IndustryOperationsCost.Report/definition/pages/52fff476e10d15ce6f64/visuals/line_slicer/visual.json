@@ -1,60 +1,62 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
-  "name": "materials_share",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "line_slicer",
   "position": {
-    "x": 648,
-    "y": 88,
-    "z": 2002,
-    "height": 112,
-    "width": 296,
+    "x": 1032,
+    "y": 24,
+    "width": 224,
+    "height": 48,
+    "z": 1000,
     "tabOrder": 0
   },
   "visual": {
-    "visualType": "card",
+    "visualType": "slicer",
     "query": {
       "queryState": {
         "Values": {
           "projections": [
             {
               "field": {
-                "Measure": {
+                "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "monthly_costs"
+                      "Entity": "lines"
                     }
                   },
-                  "Property": "Materials Share %"
+                  "Property": "line_name"
                 }
               },
-              "queryRef": "monthly_costs.Materials Share %",
-              "nativeQueryRef": "Materials Share %"
+              "queryRef": "lines.line_name",
+              "nativeQueryRef": "Line",
+              "active": true,
+              "displayName": "Line"
             }
           ]
         }
       }
     },
-    "visualContainerObjects": {
-      "title": [
+    "objects": {
+      "data": [
         {
           "properties": {
-            "show": {
+            "mode": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "text": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Materials Share %'"
+                  "Value": "'Dropdown'"
                 }
               }
             }
           }
         }
       ],
-      "subTitle": [
+      "general": [
+        {
+          "properties": {}
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
         {
           "properties": {
             "show": {

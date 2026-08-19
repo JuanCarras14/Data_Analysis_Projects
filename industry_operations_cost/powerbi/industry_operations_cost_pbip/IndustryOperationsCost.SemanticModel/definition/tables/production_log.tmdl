@@ -192,4 +192,3 @@ table production_log
 				in
 				    AddedMonth
 
-	measure 'OEE Gap Color' = IF([OEE Gap] < 0, "#D4602E", "#2B7A78")

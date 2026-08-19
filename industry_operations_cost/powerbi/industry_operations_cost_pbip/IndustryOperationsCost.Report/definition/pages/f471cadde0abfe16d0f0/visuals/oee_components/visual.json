@@ -152,36 +152,6 @@
               }
             }
           }
-        },
-        {
-          "properties": {
-            "fontColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "production_log"
-                        }
-                      },
-                      "Property": "OEE Gap Color"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "production_log.OEE Gap",
-            "data": [
-              {
-                "dataViewWildcard": {
-                  "matchingOption": 1
-                }
-              }
-            ]
-          }
         }
       ],
       "columnHeaders": [

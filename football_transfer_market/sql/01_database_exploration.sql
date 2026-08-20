@@ -1,6 +1,6 @@
 /*
 Football Transfer Market Analysis
-Phase 1: Data Exploration
+Stage 1: Data Exploration
 
 Objective:
 Explore the players table to understand the distribution of players

@@ -1,6 +1,6 @@
 /*
 Football Transfer Market Analysis
-Phase 3: Business Analysis
+Stage 3: Business Analysis
 
 Objective:
 Answer business questions about transfer spending, clubs, and player

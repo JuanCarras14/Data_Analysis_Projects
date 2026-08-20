@@ -1,14 +1,9 @@
-# Archivos temporales del sistema
+# System files
 .DS_Store
 Thumbs.db
+Desktop.ini
 
-# pbir CLI local cache/config
-.pbir/
-
-# Power BI Desktop local project state (cache, editor/local settings)
-.pbi/
-
-# Archivos de configuración de editores
+# Editors
 .vscode/
 *.swp
 
@@ -19,29 +14,23 @@ __pycache__/
 venv/
 env/
 
-# Excel temporales
+# Excel / Power BI local files
 ~$*.xlsx
 ~$*.xls
-
-# Power BI (archivos de caché, no el .pbix)
 *.pbix.bak
+.pbi/
 
 # Logs
 *.log
 
-# Local PBIX inspection output
-.tmp_pbix_*/
-.tmp_powerbi_window_shots/
-
-# Synthetic-data projects: raw/processed CSVs are reproducible by rerunning
-# each project's python/generate_and_load_data.py. Where the project also uses SQL
-# (customer_retention_behavior, supply_chain_inventory) the .db IS committed
-# under <project>/sql/database/; where it uses Excel instead (sales_analytics_pipeline,
-# industry_operations_cost) the .xlsx workbook under <project>/excel/ IS committed
+# Generated data. Each project's script under python/ rebuilds these; the
+# committed deliverable is the SQLite database (sql/database/) or the Excel
+# workbook (excel/), and the processed CSVs the Power BI models read.
 sales_analytics_pipeline/python/data/raw/
 sales_analytics_pipeline/python/data/processed/
 customer_retention_behavior/python/data/raw/
 customer_retention_behavior/python/data/processed/
+wastewater_effluent_quality/python/data/processed/
 industry_operations_cost/python/data/raw/
 industry_operations_cost/python/data/processed/*
 !industry_operations_cost/python/data/processed/lines_clean.csv
@@ -53,17 +42,3 @@ supply_chain_inventory/python/data/processed/*
 !supply_chain_inventory/python/data/processed/products_clean.csv
 !supply_chain_inventory/python/data/processed/purchase_orders_clean.csv
 !supply_chain_inventory/python/data/processed/suppliers_clean.csv
-
-# Wastewater project uses a real dataset (UCI) - raw CSV is the actual
-# source data and IS committed; only the processed copy is regenerated
-# by load_and_clean.py, so that one's ignored like the others
-wastewater_effluent_quality/python/data/processed/
-
-# Personal study notes, not part of the portfolio
-learning-notes/
-
-# Not part of the portfolio
-**/node_modules/
-
-# Internal build scripts, not portfolio content
-tools/

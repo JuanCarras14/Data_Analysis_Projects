@@ -1,0 +1,4 @@
+expression DataFolder = "C:/Data-Analysis-Projects/industry_operations_cost/python/data/processed/" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: ba915208-0346-4b97-889b-1d5fb317dd94
+
+	annotation PBI_ResultType = Text

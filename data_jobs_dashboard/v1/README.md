@@ -1,6 +1,6 @@
 # Data Jobs Dashboard v1
 
-![Dashboard Page 1](../images/Project1_Page1.png)
+![Dashboard Page 1](../images/v1_market_overview.png)
 
 ## Overview
 
@@ -24,10 +24,6 @@ Power BI dashboard exploring the 2024 data job market: annual/hourly salaries, t
 
 **Page 2 - Job title drill through**
 
-![Dashboard Page 2](../images/Project1_Page2.png)
+![Dashboard Page 2](../images/v1_job_title_drillthrough.png)
 
 Drill through by job title to compare roles in detail.
-
-## Project Status
-
-🟢 Done

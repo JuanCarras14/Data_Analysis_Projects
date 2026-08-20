@@ -29,7 +29,3 @@ Other parts: [Python](../python)
 cd supply_chain_inventory/sql
 sqlite3 database/supply_chain.db < analytics_queries.sql
 ```
-
-## Project Status
-
-🟢 Done

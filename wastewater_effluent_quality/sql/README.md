@@ -37,7 +37,3 @@ Real daily sensor readings from an urban wastewater plant: influent quality, pri
 cd wastewater_effluent_quality/sql
 sqlite3 database/wastewater.db < analytics_queries.sql
 ```
-
-## Project Status
-
-🟢 Done

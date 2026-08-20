@@ -52,26 +52,55 @@ White cards with a light border, 8px corners and a soft shadow sit on a grey pag
 
 Colour is used to direct attention, not to decorate. Bars are a single accent blue except on OEE by Line, where the measure `OEE Bar Color` turns a bar orange when that line is below the 85% target.
 
-## Power BI Build Notes
+## Data Model
 
-The editable Power BI project is in [industry_operations_cost_pbip](./industry_operations_cost_pbip):
+Two fact tables at different grains - `production_log` is daily, `monthly_costs` is monthly - joined only through the shared `lines` dimension, never to each other:
+
+- `lines[line_id]` 1:* `production_log[line_id]`
+- `lines[line_id]` 1:* `monthly_costs[line_id]`
+
+Monthly downtime is grouped by `production_log[production_month]`, a column added in Power Query rather than a DAX calculated column. A calculated column there closes the dependency graph through `monthly_costs[Cost per Unit]`, which resolves to `[Total Units]`, and refresh fails with a cyclic reference.
+
+## Measures
+
+OEE is a product of three factors, so the model keeps them as separate measures and multiplies them rather than computing one opaque number. `Theoretical Units` is the one that carries the real logic - it converts each day's actual running time into the units that line *should* have made at its rated speed:
+
+```DAX
+Theoretical Units =
+SUMX(
+    production_log,
+    DIVIDE(production_log[planned_minutes] - production_log[downtime_minutes], 60)
+        * RELATED(lines[target_units_per_hour])
+)
+
+Performance % = DIVIDE([Total Units], [Theoretical Units])
+
+OEE % = [Availability %] * [Performance %] * [Quality %]
+```
+
+The diagnostic page resolves its subject at query time instead of naming a line, so the page stays correct if the data changes:
+
+```DAX
+Worst OEE Line =
+CONCATENATEX(TOPN(1, VALUES(lines[line_name]), [OEE %], ASC), lines[line_name], ", ")
+
+Worst Line Availability = CALCULATE([Availability %], TOPN(1, VALUES(lines[line_name]), [OEE %], ASC))
+```
+
+Conditional colour is measure-driven rather than a static rule, so the 85% target is defined once and both the chart and the KPI text read from it:
+
+```DAX
+OEE Bar Color = IF([OEE %] < [OEE Target], "#D4602E", "#1F4E79")
+```
+
+## Project files
 
 - `IndustryOperationsCost.pbip` opens the report in Power BI Desktop.
-- `IndustryOperationsCost.Report/` contains the PBIR report pages, visuals and theme.
-- `IndustryOperationsCost.SemanticModel/` contains the local TMDL semantic model, CSV imports, relationships and measures.
+- `IndustryOperationsCost.Report/` holds the PBIR pages, visuals and theme.
+- `IndustryOperationsCost.SemanticModel/` holds the TMDL model: table definitions, relationships and measures.
 
-The PBIP folder is the source of truth. `industry_operations_cost.pbix` is exported from it for anyone who wants a single downloadable file.
-
-Monthly downtime is grouped by `production_log[production_month]`, a column added in Power Query rather than a DAX calculated column. A calculated column in `production_log` closes the dependency graph through `monthly_costs[Cost per Unit]`, which resolves to `[Total Units]`, and refresh fails with a cyclic reference.
-
-The model, DAX, page map and design rules are documented in [dashboard_spec.md](./dashboard_spec.md).
+The PBIP folder is the source of truth; `industry_operations_cost.pbix` is exported from it as a single downloadable file.
 
 ## How to run
 
-Open `industry_operations_cost/powerbi/industry_operations_cost_pbip/IndustryOperationsCost.pbip` in Power BI Desktop, then refresh. A PBIP stores model metadata only, so the tables are empty until the first refresh reads the CSVs.
-
-To export a single-file report: **File > Save As > Power BI report (.pbix)**.
-
-## Project Status
-
-Done
+Open `industry_operations_cost_pbip/IndustryOperationsCost.pbip` in Power BI Desktop. Set the `DataFolder` parameter to the absolute path of `industry_operations_cost/python/data/processed/` in your clone, then refresh: a PBIP stores model metadata only, so the tables are empty until the first refresh reads the CSVs.

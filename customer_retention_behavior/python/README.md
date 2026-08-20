@@ -26,7 +26,3 @@ cd customer_retention_behavior/python
 pip install -r requirements.txt
 python generate_and_load_data.py
 ```
-
-## Project Status
-
-🟢 Done

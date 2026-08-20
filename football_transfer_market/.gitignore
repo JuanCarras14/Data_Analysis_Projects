@@ -1,13 +1,5 @@
-# Database
+# Source dataset and the SQLite database built from it are too large to
+# commit; see this project's README for where to download them.
+dataset/*.csv
 database/*.db
 database/*.sqbpro
-
-# Raw datasets
-dataset/*.csv
-
-# Windows
-Thumbs.db
-Desktop.ini
-
-# VS Code
-.vscode/

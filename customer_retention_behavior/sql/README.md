@@ -30,7 +30,3 @@ Other parts: [Python](../python)
 cd customer_retention_behavior/sql
 sqlite3 database/customer_retention.db < analytics_queries.sql
 ```
-
-## Project Status
-
-🟢 Done

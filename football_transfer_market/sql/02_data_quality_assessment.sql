@@ -1,6 +1,6 @@
 /*
 Football Transfer Market Analysis
-Phase 2: Data Quality Assessment
+Stage 2: Data Quality Assessment
 
 Objective:
 Identify data quality issues that could affect subsequent analysis.

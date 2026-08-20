@@ -23,7 +23,3 @@ cd industry_operations_cost/python
 pip install -r requirements.txt
 python generate_and_load_data.py
 ```
-
-## Project Status
-
-🟢 Done

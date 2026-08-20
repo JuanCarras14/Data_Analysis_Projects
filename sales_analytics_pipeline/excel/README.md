@@ -29,7 +29,3 @@ Other parts: [Python](../python)
 ## How to run
 
 Open `sales_analysis.xlsx` - all formulas recalculate automatically. To rebuild from scratch, regenerate the CSVs with the Python script and re-import them into the `Customers`/`Products`/`Orders` sheets.
-
-## Project Status
-
-🟢 Done

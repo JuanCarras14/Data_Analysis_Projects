@@ -1,6 +1,6 @@
 # Sales Analytics Pipeline - Power BI
 
-Dashboard built on top of the clean CSVs from [Python](../python), using the same portfolio design system as the Wastewater Effluent Quality dashboard: header band, single blue accent, neutral supporting visuals, KPI cards at the top, and one written finding per page.
+Single-page sales overview built on the clean CSVs from [Python](../python). The heavier analysis in this project lives in the [Excel workbook](../excel); the dashboard is the summary layer on top of it.
 
 ## Tools
 
@@ -8,34 +8,24 @@ Dashboard built on top of the clean CSVs from [Python](../python), using the sam
 - Power Query
 - DAX measures
 
-## Pages
+## Data Model
 
-**Sales Overview**
+A star schema: `orders` is the fact table, with `customers`, `products` and a generated `Date` table as dimensions, and all measures kept in a dedicated `_Measures` table rather than scattered across the fact table.
 
-![Sales Overview](../images/overview.png)
+```DAX
+Date = CALENDAR(MIN(orders[order_date]), MAX(orders[order_date]))
+```
 
-KPI cards for completed-order revenue, profit, margin, and average order value. The page shows revenue by month, category, and segment. Revenue is basically flat between 2023 and 2024.
+The Excel workbook is deliberately not a data source here. It computes the same figures from the same CSVs, so importing it would create two sources of truth for one number.
 
-**Customers & Products**
+## The page
 
-![Customers & Products](../images/customers_products.png)
+A year slicer, a KPI row (`Total Revenue`, `Total Profit`, `Profit Margin %`, `Average Order Value`), revenue by month across the full period, and revenue split by product category and by customer segment.
 
-Top customer table, revenue vs profit by category, and product-level performance. This page checks whether the revenue leaders also hold up after product cost.
+Every revenue measure counts completed orders only, so the dashboard reconciles exactly with the Excel workbook. Cancelled and returned orders are excluded from revenue rather than silently mixed into it - they are a quality problem, and the workbook measures them as one (~12.6% of all orders).
 
-**Order Quality**
-
-![Order Quality](../images/order_quality.png)
-
-Order-status breakdown, lost-order trend, and lost-order rate by category. Cancelled and returned orders are not counted as revenue, but they are analyzed as their own quality issue.
-
-## Power BI Build Notes
-
-The model, DAX, page map, and formatting rules are documented in [dashboard_spec.md](./dashboard_spec.md).
+Revenue is essentially flat between 2023 ($3.63M) and 2024 ($3.65M), and the three customer segments land within a few percent of each other, so the interesting variation in this dataset is by category, not by segment.
 
 ## How to run
 
-Open `sales_analytics_pipeline.pbix` in Power BI Desktop. If rebuilding from source, import the clean CSVs from `sales_analytics_pipeline/python/data/processed/`, apply the relationships and measures in [dashboard_spec.md](./dashboard_spec.md), and save the report in this folder.
-
-## Project Status
-
-Done
+Open `sales_analytics_pipeline.pbix` in Power BI Desktop. The model ships with data cached, so it opens without a refresh; to rebuild it from source, regenerate the CSVs with the [Python script](../python) and point Power Query at `python/data/processed/`.

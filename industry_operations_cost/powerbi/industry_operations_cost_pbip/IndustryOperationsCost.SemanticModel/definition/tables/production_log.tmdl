@@ -185,7 +185,7 @@ table production_log
 		mode: import
 		source =
 				let
-				    Source = Csv.Document(File.Contents("C:/Users/juanj/OneDrive/Documents/Data Analysis Projects/industry_operations_cost/python/data/processed/production_log_clean.csv"),[Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Source = Csv.Document(File.Contents(DataFolder & "production_log_clean.csv"),[Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
 				    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
 				    ChangedType = Table.TransformColumnTypes(PromotedHeaders, {{"log_id", Int64.Type}, {"line_id", Int64.Type}, {"production_date", type date}, {"planned_minutes", Int64.Type}, {"downtime_minutes", Int64.Type}, {"downtime_reason", type text}, {"units_produced", Int64.Type}, {"units_defective", Int64.Type}}),
 				    AddedMonth = Table.AddColumn(ChangedType, "production_month", each Date.StartOfMonth([production_date]), type date)

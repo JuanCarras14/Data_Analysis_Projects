@@ -25,7 +25,3 @@ Effluent quality and removal % broken down by plant operating status, plus the p
 ## How to run
 
 Open `wastewater_effluent_quality.pbix` in Power BI Desktop. The data source is the cleaned CSV from [python](../python) (`data/processed/water_treatment_clean.csv`); if the path changes, update it in Power Query (Transform Data).
-
-## Project Status
-
-🟢 Done

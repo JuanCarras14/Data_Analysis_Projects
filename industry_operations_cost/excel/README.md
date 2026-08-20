@@ -27,7 +27,3 @@ Other parts: [Python](../python)
 ## How to run
 
 Open `operations_analysis.xlsx` - all formulas recalculate automatically. To rebuild from scratch, regenerate the CSVs with the Python script and re-import them into the `Lines`/`Production Log`/`Monthly Costs` sheets.
-
-## Project Status
-
-🟢 Done

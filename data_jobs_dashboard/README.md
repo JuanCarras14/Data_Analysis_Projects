@@ -4,7 +4,7 @@ Two versions of the same dashboard, analyzing the 2024 data job market (salaries
 
 ## V1 - Full Exploration
 
-![Data Jobs Dashboard v1](images/Project1_Page1.png)
+![Data Jobs Dashboard v1](images/v1_market_overview.png)
 
 Multi-page dashboard built with Power Query cleaning and implicit measures: salary trends, job distribution, and a drill-through page by job title.
 
@@ -12,7 +12,7 @@ Multi-page dashboard built with Power Query cleaning and implicit measures: sala
 
 ## V2 - Single Page
 
-![Data Jobs Dashboard v2](images/Project2_Page1.png)
+![Data Jobs Dashboard v2](images/v2_single_page.png)
 
 Redo of v1 with a real data model and DAX measures, condensed into a single page with slicers.
 

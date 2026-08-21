@@ -1,0 +1,12 @@
+relationship AutoDetected_ead5fc22-7e6b-4d6a-b226-2ac096e3f2a4
+	fromColumn: orders.customer_id
+	toColumn: customers.customer_id
+
+relationship AutoDetected_c349c271-5966-4b95-ab5b-3b1c60fe6bc6
+	fromColumn: orders.product_id
+	toColumn: products.product_id
+
+relationship 63708d2e-70cf-7a87-0357-897e218203b3
+	fromColumn: orders.order_date
+	toColumn: Date.Date
+

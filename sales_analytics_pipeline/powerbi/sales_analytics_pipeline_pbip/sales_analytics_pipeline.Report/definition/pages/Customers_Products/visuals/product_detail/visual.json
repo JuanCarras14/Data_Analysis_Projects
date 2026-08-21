@@ -1,0 +1,189 @@
+{
+  "name": "product_detail",
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "queryRef": "products.product_name",
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "products"
+                    }
+                  },
+                  "Property": "product_name"
+                }
+              },
+              "nativeQueryRef": "product_name"
+            },
+            {
+              "queryRef": "products.category",
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "products"
+                    }
+                  },
+                  "Property": "category"
+                }
+              },
+              "nativeQueryRef": "category"
+            },
+            {
+              "queryRef": "_Measures.Completed Orders",
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Completed Orders"
+                }
+              },
+              "nativeQueryRef": "Completed Orders"
+            },
+            {
+              "queryRef": "_Measures.Total Revenue",
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Total Revenue"
+                }
+              },
+              "nativeQueryRef": "Total Revenue"
+            },
+            {
+              "queryRef": "_Measures.Total Profit",
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Total Profit"
+                }
+              },
+              "nativeQueryRef": "Total Profit"
+            },
+            {
+              "queryRef": "_Measures.Profit Margin %",
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Profit Margin %"
+                }
+              },
+              "nativeQueryRef": "Profit Margin %"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "_Measures"
+                  }
+                },
+                "Property": "Total Revenue"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "objects": {
+      "grid": [
+        {
+          "properties": {
+            "rowPadding": {
+              "expr": {
+                "Literal": {
+                  "Value": "2D"
+                }
+              }
+            },
+            "gridVertical": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "values": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Products ranked by revenue'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "position": {
+    "x": 24,
+    "y": 472,
+    "z": 500,
+    "width": 1232,
+    "height": 224,
+    "tabOrder": 500
+  },
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json"
+}

@@ -30,7 +30,7 @@ Data-Analysis-Projects/
 
 - **[Customer Retention & Behavior](./customer_retention_behavior)** (Python + SQL) - Python simulates a customer base with realistic churn, SQL builds cohort retention curves and RFM segments.
 
-- **[Sales & Customer Analytics Pipeline](./sales_analytics_pipeline)** (Python + Excel + Power BI) - Python generates and cleans a synthetic sales dataset, Excel does the analysis with formulas only (VLOOKUP, SUMIFS, INDEX/MATCH), and a Power BI page summarizes revenue, profit and margin on top.
+- **[Sales & Customer Analytics Pipeline](./sales_analytics_pipeline)** (Python + Excel + Power BI) - Python generates and cleans a synthetic sales dataset, Excel does the analysis with formulas only (VLOOKUP, SUMIFS, INDEX/MATCH), and a three-page Power BI report covers revenue, product mix and order quality - using a field parameter to switch the breakdown dimension and DAX measures that write each page's finding as text.
 
 - **[Football Transfer Market Analysis](./football_transfer_market)** (SQL) - analysis of real transfer-market data: exploration, quality checks, and business questions with joins and subqueries.
 

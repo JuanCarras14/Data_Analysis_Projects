@@ -1,0 +1,121 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "revenue_vs_profit",
+  "position": {
+    "x": 24,
+    "y": 192,
+    "z": 400,
+    "height": 264,
+    "width": 1232,
+    "tabOrder": 400
+  },
+  "visual": {
+    "visualType": "clusteredBarChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "products"
+                    }
+                  },
+                  "Property": "category"
+                }
+              },
+              "queryRef": "products.category",
+              "nativeQueryRef": "Product category",
+              "active": true,
+              "displayName": "Product category"
+            }
+          ],
+          "fieldParameters": [
+            {
+              "parameterExpr": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Breakdown"
+                    }
+                  },
+                  "Property": "Breakdown"
+                }
+              },
+              "index": 0,
+              "length": 1
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Total Revenue"
+                }
+              },
+              "queryRef": "_Measures.Total Revenue",
+              "nativeQueryRef": "Total Revenue"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Total Profit"
+                }
+              },
+              "queryRef": "_Measures.Total Profit",
+              "nativeQueryRef": "Total Profit"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "_Measures"
+                  }
+                },
+                "Property": "Total Revenue"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Revenue against profit, ranked'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

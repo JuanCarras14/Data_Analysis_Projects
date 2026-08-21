@@ -1,0 +1,91 @@
+table customers
+	lineageTag: 90bf5e43-1e4c-4f1e-929c-734e1d7c0b98
+
+	column customer_id
+		dataType: int64
+		formatString: 0
+		lineageTag: e7b8fc55-b67c-4ffe-b21d-333e17a4fff0
+		summarizeBy: none
+		sourceColumn: customer_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_name
+		dataType: string
+		lineageTag: 0a934a2b-d6a3-429d-b2df-f1d63ec55ffb
+		summarizeBy: none
+		sourceColumn: customer_name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column email
+		dataType: string
+		lineageTag: 6b7ee7f4-6c75-450f-ba01-2c8a45de0ab6
+		summarizeBy: none
+		sourceColumn: email
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column city
+		dataType: string
+		lineageTag: 1470672a-e169-46a4-aa45-b80eecd002a9
+		summarizeBy: none
+		sourceColumn: city
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column state
+		dataType: string
+		lineageTag: e7c93e45-bcd1-452a-8e51-c76d524fdac0
+		summarizeBy: none
+		sourceColumn: state
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column segment
+		dataType: string
+		lineageTag: 21728b6f-56d4-40e1-a6f8-22fa2b21259e
+		summarizeBy: none
+		sourceColumn: segment
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column signup_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: e1c00f1c-7e47-44e6-9da8-a3fc08d1cac0
+		summarizeBy: none
+		sourceColumn: signup_date
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition customers = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "customers_clean.csv"),[Delimiter=",", Columns=7, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"customer_id", Int64.Type}, {"customer_name", type text}, {"email", type text}, {"city", type text}, {"state", type text}, {"segment", type text}, {"signup_date", type date}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

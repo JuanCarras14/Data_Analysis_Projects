@@ -1,0 +1,72 @@
+table products
+	lineageTag: 00d3cbf7-4761-4bc3-9964-80224a8ab08f
+
+	column product_id
+		dataType: int64
+		formatString: 0
+		lineageTag: d0aacd51-5061-44c6-9e80-2870f1d1825c
+		summarizeBy: none
+		sourceColumn: product_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_name
+		dataType: string
+		lineageTag: b0b7cd43-4aa2-488e-b32a-1226c7e85dc9
+		summarizeBy: none
+		sourceColumn: product_name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column category
+		dataType: string
+		lineageTag: 436e93b1-9f50-40b0-a2c9-ba170327ab51
+		summarizeBy: none
+		sourceColumn: category
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column unit_cost
+		dataType: double
+		lineageTag: 4c193afe-d630-4694-9aa2-7eb1eae86ad3
+		summarizeBy: none
+		sourceColumn: unit_cost
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column unit_price
+		dataType: double
+		lineageTag: 8458fbbe-64a6-416d-ad2c-04d2741ae6e5
+		summarizeBy: none
+		sourceColumn: unit_price
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition products = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "products_clean.csv"),[Delimiter=",", Columns=5, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"product_id", Int64.Type}, {"product_name", type text}, {"category", type text}, {"unit_cost", type number}, {"unit_price", type number}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

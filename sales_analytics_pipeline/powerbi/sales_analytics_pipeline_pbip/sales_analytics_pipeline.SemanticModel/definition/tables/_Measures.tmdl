@@ -1,0 +1,145 @@
+table _Measures
+	lineageTag: b0b99bdc-867d-4654-a128-051ad97e524b
+
+	measure 'Total Revenue' =
+			
+			CALCULATE(
+			    SUM(orders[net_revenue]),
+			    orders[order_status] = "Completed"
+			)
+		formatString: \$#,0;(\$#,0);\$#,0
+		lineageTag: 485bbc6e-5639-4189-b600-aa9e4fc7428e
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Total Cost' =
+			
+			CALCULATE(
+			    SUMX(orders, orders[quantity] * RELATED(products[unit_cost])),
+			    orders[order_status] = "Completed"
+			)
+		formatString: \$#,0;(\$#,0);\$#,0
+		lineageTag: e49abb00-ab4a-4ca2-a53d-bb3ef6edde6f
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Total Profit' = [Total Revenue] - [Total Cost]
+		formatString: \$#,0;(\$#,0);\$#,0
+		lineageTag: ff082993-64fe-4381-8bbe-adc0795f8b0b
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Profit Margin %' = DIVIDE([Total Profit], [Total Revenue])
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 7e24c892-eed2-4d94-9636-0ae0c5a312d7
+
+	measure 'Completed Orders' =
+			
+			CALCULATE(
+			    DISTINCTCOUNT(orders[order_id]),
+			    orders[order_status] = "Completed"
+			)
+		formatString: #,0
+		lineageTag: 23304772-19b3-44cd-8d08-0f3adb538301
+
+	measure 'Average Order Value' = DIVIDE([Total Revenue], [Completed Orders])
+		formatString: \$#,0;(\$#,0);\$#,0
+		lineageTag: 14e71f8f-33e8-4d68-ac82-530626edbc30
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Total Orders' = DISTINCTCOUNT(orders[order_id])
+		formatString: #,0
+		lineageTag: eec95a51-38ee-4add-b956-08b987bd6706
+
+	measure 'Lost Order %' = DIVIDE([Total Orders] - [Completed Orders], [Total Orders])
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: aef219d9-35fc-47df-834f-a3eb7dc7eccd
+
+	measure 'Lost Orders' = [Total Orders] - [Completed Orders]
+		formatString: #,0
+		lineageTag: 2b1c0d00-0001-4c11-9a30-6d8e2f4a1b01
+
+	measure 'Revenue Prior Year' = CALCULATE([Total Revenue], SAMEPERIODLASTYEAR('Date'[Date]))
+		formatString: \$#,0;(\$#,0);\$#,0
+		lineageTag: 2b1c0d00-0002-4c11-9a30-6d8e2f4a1b02
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Revenue YoY %' = DIVIDE([Total Revenue] - [Revenue Prior Year], [Revenue Prior Year])
+		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: 2b1c0d00-0003-4c11-9a30-6d8e2f4a1b03
+
+	/// Writes the headline finding as a sentence, recalculated under whatever
+	/// the reader has filtered. Replaces a hardcoded text box that would go
+	/// stale the moment someone touches a slicer.
+	measure 'Revenue Narrative' =
+			
+			VAR LatestYear = MAX('Date'[Year])
+			VAR PriorYear = LatestYear - 1
+			VAR RevNow = CALCULATE([Total Revenue], REMOVEFILTERS('Date'), 'Date'[Year] = LatestYear)
+			VAR RevPrior = CALCULATE([Total Revenue], REMOVEFILTERS('Date'), 'Date'[Year] = PriorYear)
+			VAR Change = DIVIDE(RevNow - RevPrior, RevPrior)
+			VAR Verdict =
+			    SWITCH(
+			        TRUE(),
+			        ABS(Change) < 0.02, "Revenue is flat year over year",
+			        Change > 0, "Revenue is growing",
+			        "Revenue is declining"
+			    )
+			RETURN
+			    IF(
+			        ISBLANK(RevPrior),
+			        FORMAT(RevNow, "$#,0") & " in " & FORMAT(LatestYear, "0") & ". No prior year in range to compare against.",
+			        Verdict & ": " & FORMAT(RevNow, "$#,0") & " in " & FORMAT(LatestYear, "0") & ", "
+			            & FORMAT(Change, "+0.0%;-0.0%;0.0%") & " vs " & FORMAT(PriorYear, "0") & "."
+			    )
+		lineageTag: 2b1c0d00-0004-4c11-9a30-6d8e2f4a1b04
+
+	/// States whether the revenue leader is also the profit leader. The whole
+	/// point of the Customers & Products page in one line.
+	measure 'Mix Narrative' =
+			
+			VAR LeaderByRevenue = CONCATENATEX(TOPN(1, VALUES(products[category]), [Total Revenue], DESC), products[category])
+			VAR LeaderByProfit = CONCATENATEX(TOPN(1, VALUES(products[category]), [Total Profit], DESC), products[category])
+			VAR MarginOfRevenueLeader = CALCULATE([Profit Margin %], products[category] = LeaderByRevenue)
+			VAR MarginOfProfitLeader = CALCULATE([Profit Margin %], products[category] = LeaderByProfit)
+			RETURN
+			    IF(
+			        LeaderByRevenue = LeaderByProfit,
+			        "Product mix: " & LeaderByRevenue & " leads on both revenue and profit, at a "
+			            & FORMAT(MarginOfRevenueLeader, "0.0%") & " margin.",
+			        "Product mix: " & LeaderByRevenue & " sells the most, but " & LeaderByProfit & " earns the most: "
+			            & FORMAT(MarginOfProfitLeader, "0.0%") & " margin against "
+			            & FORMAT(MarginOfRevenueLeader, "0.0%") & ". Revenue rank is not profit rank."
+			    )
+		lineageTag: 2b1c0d00-0005-4c11-9a30-6d8e2f4a1b05
+
+	/// Quantifies the orders that never became revenue and names the worst category.
+	measure 'Quality Narrative' =
+			
+			VAR WorstCategory = CONCATENATEX(TOPN(1, VALUES(products[category]), [Lost Order %], DESC), products[category])
+			VAR WorstRate = MAXX(TOPN(1, VALUES(products[category]), [Lost Order %], DESC), [Lost Order %])
+			RETURN
+			    FORMAT([Lost Orders], "#,0") & " of " & FORMAT([Total Orders], "#,0")
+			        & " orders were cancelled or returned (" & FORMAT([Lost Order %], "0.0%") & "). "
+			        & "Worst category: " & WorstCategory & " at " & FORMAT(WorstRate, "0.0%") & "."
+		lineageTag: 2b1c0d00-0006-4c11-9a30-6d8e2f4a1b06
+
+	column Column
+		formatString: 0
+		lineageTag: 0688160d-2cc9-4488-a4fe-abbcbd7db18b
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Column]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition _Measures = calculated
+		mode: import
+		source = Row("Column", BLANK())
+
+	annotation PBI_Id = 965642882dc94192a53f3ada29470a34
+
+	annotation 436ba87b-9c83-4389-a31b-ebd06a36be98 = {"Expression":""}
+

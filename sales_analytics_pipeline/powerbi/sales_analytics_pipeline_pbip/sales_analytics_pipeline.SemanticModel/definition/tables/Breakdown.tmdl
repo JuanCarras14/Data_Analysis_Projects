@@ -1,0 +1,50 @@
+/// Field parameter. Lets the reader switch the dimension the page breaks down by,
+/// so one set of visuals answers three questions instead of duplicating them.
+table Breakdown
+	lineageTag: 7c1e2a44-9b30-4d51-8e77-2a10c6f4b901
+
+	column Breakdown
+		lineageTag: 1a2b3c4d-0001-4a10-9f21-5b7c8d9e0f11
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Breakdown Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Breakdown Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Breakdown Fields'
+		isHidden
+		lineageTag: 1a2b3c4d-0002-4a10-9f21-5b7c8d9e0f12
+		summarizeBy: none
+		sourceColumn: [Value2]
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Breakdown Order'
+		isHidden
+		formatString: 0
+		lineageTag: 1a2b3c4d-0003-4a10-9f21-5b7c8d9e0f13
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Breakdown = calculated
+		mode: import
+		source =
+				{
+				    ("Product category", NAMEOF('products'[category]), 0),
+				    ("Customer segment", NAMEOF('customers'[segment]), 1),
+				    ("State", NAMEOF('customers'[state]), 2)
+				}
+
+	annotation PBI_Id = 4f6a1c8b92e34d7fa5c0e1b83d92f7a6
+

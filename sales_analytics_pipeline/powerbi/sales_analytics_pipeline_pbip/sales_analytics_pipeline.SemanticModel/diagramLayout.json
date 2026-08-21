@@ -1,0 +1,86 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 0,
+            "y": 27
+          },
+          "nodeIndex": "customers",
+          "nodeLineageTag": "90bf5e43-1e4c-4f1e-929c-734e1d7c0b98",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 360,
+            "y": 37
+          },
+          "nodeIndex": "orders",
+          "nodeLineageTag": "e5fe4e99-f5b7-4153-b01c-af2196ac3ca5",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 676,
+            "y": 52
+          },
+          "nodeIndex": "products",
+          "nodeLineageTag": "00d3cbf7-4761-4bc3-9964-80224a8ab08f",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 353.24115895599118,
+            "y": 393.50083660173391
+          },
+          "nodeIndex": "Date",
+          "nodeLineageTag": "579b4f9c-1a9d-4eb4-bfe6-7f65b061b42a",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 960,
+            "y": 192.25041830086695
+          },
+          "nodeIndex": "_Measures",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 63.287087723234038,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

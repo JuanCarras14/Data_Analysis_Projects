@@ -1,0 +1,122 @@
+table orders
+	lineageTag: e5fe4e99-f5b7-4153-b01c-af2196ac3ca5
+
+	column order_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 995c4add-987d-48f8-9313-26687942806b
+		summarizeBy: sum
+		sourceColumn: order_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_id
+		dataType: int64
+		formatString: 0
+		lineageTag: aa504dcd-5de9-40a8-9ca7-d05c97db6690
+		summarizeBy: none
+		sourceColumn: customer_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 3ca7359f-9fb4-48ee-84af-afcb16ce744e
+		summarizeBy: none
+		sourceColumn: product_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: f240932b-567d-4caa-add7-23bca5d4f48b
+		summarizeBy: none
+		sourceColumn: order_date
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column quantity
+		dataType: int64
+		formatString: 0
+		lineageTag: 08b783e3-fd93-4b70-bced-0a8d7a0b1c5b
+		summarizeBy: sum
+		sourceColumn: quantity
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column unit_price
+		dataType: double
+		lineageTag: 90f9a5d6-76eb-401b-9de0-5a4df150ed30
+		summarizeBy: sum
+		sourceColumn: unit_price
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column discount
+		dataType: double
+		lineageTag: 71b6782d-5ce5-4dc2-b371-636bd5ace39c
+		summarizeBy: sum
+		sourceColumn: discount
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column order_status
+		dataType: string
+		lineageTag: 8ee88ebe-cd08-473a-b701-93b5e63b84fa
+		summarizeBy: none
+		sourceColumn: order_status
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column net_revenue
+		dataType: double
+		lineageTag: 680d7a91-cb44-45a6-befe-78d9ea244f7d
+		summarizeBy: sum
+		sourceColumn: net_revenue
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition orders = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "orders_clean.csv"),[Delimiter=",", Columns=9, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"order_id", Int64.Type}, {"customer_id", Int64.Type}, {"product_id", Int64.Type}, {"order_date", type date}, {"quantity", Int64.Type}, {"unit_price", type number}, {"discount", type number}, {"order_status", type text}, {"net_revenue", type number}})
+				in
+				    #"Changed Type"
+
+	changedProperty = IsHidden
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

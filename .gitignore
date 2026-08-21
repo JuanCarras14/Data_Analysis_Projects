@@ -36,7 +36,9 @@ industry_operations_cost/python/data/processed/*
 !industry_operations_cost/python/data/processed/lines_clean.csv
 !industry_operations_cost/python/data/processed/monthly_costs_clean.csv
 !industry_operations_cost/python/data/processed/production_log_clean.csv
-supply_chain_inventory/python/data/raw/
+# raw/ is committed for this project only: the dbt pipeline reads it as its
+# source, so without it the models and their data-quality tests cannot run
+!supply_chain_inventory/python/data/raw/
 supply_chain_inventory/python/data/processed/*
 !supply_chain_inventory/python/data/processed/inventory_snapshots_clean.csv
 !supply_chain_inventory/python/data/processed/products_clean.csv

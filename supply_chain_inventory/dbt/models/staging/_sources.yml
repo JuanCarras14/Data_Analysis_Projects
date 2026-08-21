@@ -1,0 +1,69 @@
+version: 2
+
+sources:
+  - name: raw
+    description: >
+      Raw CSVs written by python/generate_and_load_data.py before any cleaning.
+      They carry deliberately injected defects, so the tests below are expected
+      to flag rows. They run at severity "warn": the point is to measure the
+      problem on the way in, not to stop the pipeline.
+    meta:
+      external_location: "../python/data/raw/{name}_raw.csv"
+    tables:
+      - name: products
+        description: Product catalogue. One row per product.
+        columns:
+          - name: product_id
+            description: Primary key.
+            data_tests: [not_null, unique]
+          - name: unit_cost
+            description: Cost per unit, used to value inventory.
+            data_tests:
+              - not_null
+
+      - name: suppliers
+        description: Supplier catalogue. One row per supplier.
+        columns:
+          - name: supplier_id
+            description: Primary key.
+            data_tests: [not_null, unique]
+
+      - name: inventory_snapshots
+        description: Weekly stock position per product, 52 weeks.
+        columns:
+          - name: product_id
+            data_tests:
+              - not_null
+              - relationships:
+                  to: source('raw', 'products')
+                  field: product_id
+          - name: stock_on_hand
+            description: >
+              Units on hand. The generator flips the sign on ~1% of rows to
+              simulate a counting error, so this test warns on the raw layer.
+            data_tests:
+              - dbt_utils.accepted_range:
+                  min_value: 0
+                  inclusive: true
+                  config:
+                    severity: warn
+
+      - name: purchase_orders
+        description: >
+          One row per purchase order. The generator duplicates ~1.5% of orders
+          and blanks the supplier on ~2%, so uniqueness and completeness both
+          warn here and are resolved downstream.
+        columns:
+          - name: po_id
+            description: Order id. Not unique in the raw layer.
+            data_tests:
+              - unique:
+                  config:
+                    severity: warn
+              - not_null
+          - name: supplier_id
+            description: Missing on some orders. Kept, not dropped - see stg_purchase_orders.
+            data_tests:
+              - not_null:
+                  config:
+                    severity: warn

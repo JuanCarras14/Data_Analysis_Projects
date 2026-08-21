@@ -2,7 +2,7 @@
 
 Data Analyst with a chemical-engineering background. I built these projects to practice and show what I can do with SQL, Power BI, Python and Excel: querying, cleaning, visualizing, and interpreting data.
 
-**Tools:** SQL - Power BI (DAX, Power Query) - Python (pandas) - Excel
+**Tools:** SQL - dbt - Power BI (DAX, Power Query) - Python (pandas) - Excel
 
 ## Repository structure
 
@@ -11,7 +11,7 @@ Organized by project. Each project has its own folder with a README, and inside 
 ```text
 Data-Analysis-Projects/
 ├── wastewater_effluent_quality/   (python + sql + power bi)
-├── supply_chain_inventory/        (python + sql + power bi)
+├── supply_chain_inventory/        (python + dbt + sql + power bi)
 ├── industry_operations_cost/      (python + excel + power bi)
 ├── customer_retention_behavior/   (python + sql)
 ├── sales_analytics_pipeline/      (python + excel + power bi)
@@ -24,7 +24,7 @@ Data-Analysis-Projects/
 
 - **[Wastewater Effluent Quality](./wastewater_effluent_quality)** (Python + SQL + Power BI) - real data from an actual wastewater treatment plant ([UCI dataset](https://archive.ics.uci.edu/dataset/106/water+treatment+plant), 165 days of sensor readings). Python cleans the raw sensor data (missing readings kept as `NULL`, not dropped or guessed), SQL measures compliance and removal efficiency, and a Power BI dashboard puts both into KPI cards and charts. The plant met discharge limits on about 95% of the days, and the biological stage does most of the work (83.6% BOD removal vs 37.8% in the primary settler). This is the project that ties my chemical-engineering background to data work.
 
-- **[Supply Chain & Inventory Optimization](./supply_chain_inventory)** (Python + SQL + Power BI) - Python runs a week-by-week inventory simulation, SQL analyzes stockout rates and supplier on-time performance, and Power BI shows inventory risk and supplier reliability.
+- **[Supply Chain & Inventory Optimization](./supply_chain_inventory)** (Python + dbt + SQL + Power BI) - Python runs a week-by-week inventory simulation, dbt turns the raw output into tested and documented models on DuckDB, SQL analyzes stockout rates and supplier on-time performance, and Power BI shows inventory risk and supplier reliability.
 
 - **[Industry Operations & Cost Optimization](./industry_operations_cost)** (Python + Excel + Power BI) - Python simulates production lines, Excel calculates OEE and cost per unit by line, and Power BI turns the OEE/cost story into three portfolio dashboard pages.
 

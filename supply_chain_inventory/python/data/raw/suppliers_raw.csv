@@ -1,0 +1,16 @@
+supplier_id,supplier_name,region,nominal_lead_time_days
+1,Supplier 1,Domestic,7
+2,Supplier 2,Europe,10
+3,Supplier 3,Asia,10
+4,Supplier 4,Domestic,30
+5,Supplier 5,Domestic,30
+6,Supplier 6,Latin America,7
+7,Supplier 7,Domestic,7
+8,Supplier 8,Asia,10
+9,Supplier 9,Domestic,30
+10,Supplier 10,Asia,30
+11,Supplier 11,Latin America,10
+12,Supplier 12,Latin America,30
+13,Supplier 13,Europe,7
+14,Supplier 14,Asia,21
+15,Supplier 15,Europe,14

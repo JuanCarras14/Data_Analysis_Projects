@@ -1,0 +1,81 @@
+version: 2
+
+models:
+  - name: stg_products
+    description: Product catalogue, typed and renamed. One row per product.
+    columns:
+      - name: product_id
+        description: Primary key.
+        data_tests: [not_null, unique]
+      - name: unit_cost
+        description: Cost per unit, used to value stock downstream.
+        data_tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: false
+
+  - name: stg_suppliers
+    description: >
+      Supplier catalogue plus an explicit unknown member (-1) for orders that
+      arrived with no supplier on record.
+    columns:
+      - name: supplier_id
+        description: Primary key. -1 is the unknown member.
+        data_tests: [not_null, unique]
+      - name: is_unknown_member
+        description: True only for supplier -1.
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+              quote: false
+
+  - name: stg_inventory_snapshots
+    description: >
+      Weekly stock position per product. Negative readings from the source are
+      corrected to their magnitude and flagged, never dropped.
+    columns:
+      - name: product_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_products')
+              field: product_id
+      - name: snapshot_date
+        data_tests: [not_null]
+      - name: stock_on_hand
+        description: >
+          Non-negative, or null where the source reading was invalid. Null is
+          deliberate: an impossible reading tells us the value is wrong, not
+          what it should have been.
+        data_tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: true
+      - name: was_invalid_reading
+        description: True where the source reading was negative and was discarded.
+        data_tests: [not_null]
+
+  - name: stg_purchase_orders
+    description: >
+      One row per purchase order. Duplicates removed on po_id; missing
+      suppliers resolved to the unknown member so no order is lost.
+    columns:
+      - name: po_id
+        description: Primary key after deduplication - this test must pass.
+        data_tests: [not_null, unique]
+      - name: supplier_id
+        description: Never null after cleaning; -1 where none was recorded.
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_suppliers')
+              field: supplier_id
+      - name: has_unknown_supplier
+        description: True for orders with no supplier on record.
+        data_tests: [not_null]
+      - name: quantity_ordered
+        data_tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: false

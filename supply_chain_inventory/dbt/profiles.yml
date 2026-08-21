@@ -1,0 +1,9 @@
+# Local DuckDB profile. No cloud account or credentials needed: the warehouse
+# is a single file created next to this project on the first run.
+supply_chain_inventory:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: supply_chain.duckdb
+      threads: 4

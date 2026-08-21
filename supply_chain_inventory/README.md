@@ -5,6 +5,7 @@ A week-by-week inventory simulation, then stockout and supplier performance anal
 ## How each tool is used
 
 - **[Python](./python)** - builds 80 products and 15 suppliers and runs a 52-week simulation where demand draws down stock, low stock triggers a purchase order, and orders arrive on time or late based on supplier reliability. Injects dirty data, cleans it, and loads four tables into SQLite.
+- **[dbt](./dbt)** - the transformation layer: the pandas cleaning rewritten as tested, documented dbt models on DuckDB. Source tests measure the defects arriving (42 negative stock readings, 19 orders with no supplier, 8 duplicates); model tests prove they were resolved. One of those tests found an off-by-one in the original cleaning.
 - **[SQL](./sql)** - stockout rate by product, supplier on-time delivery performance, inventory value by category, and a data-quality check for purchase orders with no supplier.
 - **[Power BI](./powerbi)** - three-page dashboard for inventory health, stockout risk, and supplier reliability, each page laid out around the question it answers.
 

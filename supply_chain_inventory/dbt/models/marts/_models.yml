@@ -1,0 +1,97 @@
+version: 2
+
+models:
+  - name: dim_products
+    description: Product dimension. One row per product.
+    columns:
+      - name: product_id
+        description: Primary key.
+        data_tests: [not_null, unique]
+      - name: category
+        data_tests:
+          - accepted_values:
+              values: ["Electronics", "Food", "Home Goods", "Apparel", "Tools"]
+
+  - name: dim_suppliers
+    description: Supplier dimension, including the unknown member.
+    columns:
+      - name: supplier_id
+        description: Primary key. -1 is the unknown member.
+        data_tests: [not_null, unique]
+
+  - name: fct_inventory_weekly
+    description: >
+      Weekly stock fact, one row per product per week, with stock value and the
+      length of the stockout run each week belongs to.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [product_id, snapshot_date]
+    columns:
+      - name: product_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_products')
+              field: product_id
+      - name: snapshot_date
+        data_tests: [not_null]
+      - name: stock_on_hand
+        description: Null on weeks whose source reading was invalid.
+        data_tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: true
+      - name: stock_value
+        description: stock_on_hand x unit_cost.
+        data_tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: true
+      - name: stockout_run_weeks
+        description: >
+          How many consecutive weeks the stockout this row belongs to lasted.
+          Null when the product was in stock that week.
+
+  - name: fct_purchase_orders
+    description: >
+      Purchase order fact, one row per order. Orders with no supplier on record
+      resolve to the unknown member and stay in the totals.
+    columns:
+      - name: po_id
+        description: Primary key.
+        data_tests: [not_null, unique]
+      - name: supplier_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_suppliers')
+              field: supplier_id
+      - name: product_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_products')
+              field: product_id
+      - name: is_on_time
+        data_tests: [not_null]
+
+  - name: supplier_scorecard
+    description: >
+      One row per named supplier with delivery reliability and lead time gap.
+      The unknown member is excluded: its orders are real, but a supplier that
+      was never recorded cannot be scored.
+    columns:
+      - name: supplier_id
+        description: Primary key. Never -1.
+        data_tests: [not_null, unique]
+      - name: on_time_rate
+        description: Share of that supplier's orders delivered on or before the expected date.
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 1
+              inclusive: true
+      - name: reliability_rank
+        description: 1 is the most reliable supplier.
+        data_tests: [not_null]
